@@ -4,7 +4,6 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.github.atave</groupId>
     <artifactId>cmis-client</artifactId>
     <version>1.0-SNAPSHOT</version>
 
@@ -13,6 +12,15 @@
         <artifactId>vaadin-cmis-browser</artifactId>
         <version>1.0-SNAPSHOT</version>
     </parent>
+
+    <dependencies>
+        <!-- OpenCMIS -->
+        <dependency>
+            <groupId>org.apache.chemistry.opencmis</groupId>
+            <artifactId>chemistry-opencmis-client-impl</artifactId>
+            <version>0.10.0</version>
+        </dependency>
+    </dependencies>
 
     <build>
         <plugins>
@@ -27,7 +35,7 @@
                     </excludes>
                 </configuration>
             </plugin>
-            
+
             <!-- Maven Failsafe Plugin -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -52,7 +60,7 @@
                         </goals>
                     </execution>
                 </executions>
-            </plugin> 
+            </plugin>
 
             <!-- Maven Jetty Plugin -->
             <plugin>
