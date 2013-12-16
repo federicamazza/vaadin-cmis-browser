@@ -62,10 +62,8 @@ public class DocumentView extends FileView {
     /**
      * Fetches the latest major or minor version of this document.
      *
-     * @param major
-     *            if <code>true</code> the latest major version will be
-     *            returned, otherwise the very last version will be returned
-     *
+     * @param major if <code>true</code> the latest major version will be
+     *              returned, otherwise the very last version will be returned
      * @return the latest document object
      */
     public DocumentView getObjectOfLatestVersion(boolean major) {

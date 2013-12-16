@@ -5,7 +5,10 @@ import com.github.atave.cmis.views.DocumentView;
 import com.vaadin.ui.Upload;
 import org.apache.chemistry.opencmis.commons.enums.VersioningState;
 
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.math.BigInteger;
 import java.util.Collections;
 import java.util.HashMap;
@@ -42,11 +45,9 @@ public abstract class DocumentUploader implements Upload.Receiver, Upload.Succee
     /**
      * Invoked when a new upload arrives.
      *
-     * @param filename
-     *            the desired filename of the upload, usually as specified
-     *            by the client.
-     * @param mimeType
-     *            the MIME type of the uploaded file.
+     * @param filename the desired filename of the upload, usually as specified
+     *                 by the client.
+     * @param mimeType the MIME type of the uploaded file.
      * @return Stream to which the uploaded file should be written.
      */
     @Override
@@ -61,7 +62,7 @@ public abstract class DocumentUploader implements Upload.Receiver, Upload.Succee
      */
     @Override
     public void uploadSucceeded(Upload.SucceededEvent event) {
-        if(fileName == null) {
+        if (fileName == null) {
             fileName = event.getFilename();
         }
 

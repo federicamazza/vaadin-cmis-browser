@@ -20,11 +20,11 @@ public abstract class _groupBy<K, T> {
     public Map<K, Collection<T>> on(Iterable<T> iterable) {
         Map<K, Collection<T>> map = new HashMap<K, Collection<T>>();
 
-        for(T o : iterable) {
+        for (T o : iterable) {
             K key = process(o);
             Collection<T> values = map.get(key);
 
-            if(values == null) {
+            if (values == null) {
                 values = new ArrayList<T>();
                 map.put(key, values);
             }

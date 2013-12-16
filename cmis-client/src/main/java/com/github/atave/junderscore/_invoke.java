@@ -9,8 +9,8 @@ import java.util.Arrays;
  * Invokes a method on every passed object.
  */
 public class _invoke {
-    public static <T> void  on(Iterable<T> iterable, final String methodName, final Object... args) throws InvocationTargetException, IllegalAccessException {
-        for(T o : iterable) {
+    public static <T> void on(Iterable<T> iterable, final String methodName, final Object... args) throws InvocationTargetException, IllegalAccessException {
+        for (T o : iterable) {
             new _find<Method>() {
                 @Override
                 protected boolean test(Method object) {

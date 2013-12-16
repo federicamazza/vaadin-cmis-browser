@@ -1,7 +1,9 @@
 package com.github.atave.cmis.views;
 
 import com.github.atave.junderscore._map;
-import org.apache.chemistry.opencmis.client.api.*;
+import org.apache.chemistry.opencmis.client.api.Document;
+import org.apache.chemistry.opencmis.client.api.FileableCmisObject;
+import org.apache.chemistry.opencmis.client.api.Folder;
 import org.apache.chemistry.opencmis.commons.enums.Action;
 
 import java.util.Collection;
@@ -99,7 +101,7 @@ public class FileView {
      * Returns the parents of this object.
      *
      * @return the list of parent folders of this object or an empty list if
-     *         this object is unfiled or if this object is the root folder
+     * this object is unfiled or if this object is the root folder
      */
     public Collection<FolderView> getParents() {
         return new _map<FolderView, Folder>() {

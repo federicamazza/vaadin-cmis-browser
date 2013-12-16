@@ -14,8 +14,8 @@ public abstract class _filter<T> {
 
     public Collection<T> on(Iterable<T> iterable) {
         Collection<T> retval = new ArrayList<T>();
-        for(T o : iterable) {
-            if(test(o)) {
+        for (T o : iterable) {
+            if (test(o)) {
                 retval.add(o);
             }
         }

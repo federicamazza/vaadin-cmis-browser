@@ -13,7 +13,7 @@ public abstract class _reduce<R, T> {
     protected abstract R process(R memo, T object);
 
     public R on(Collection<T> collection, R memo) {
-        for(T o : collection) {
+        for (T o : collection) {
             memo = process(memo, o);
         }
         return memo;

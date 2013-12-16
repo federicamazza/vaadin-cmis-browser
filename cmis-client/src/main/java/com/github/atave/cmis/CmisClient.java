@@ -1,8 +1,9 @@
 package com.github.atave.cmis;
 
-import com.github.atave.cmis.views.*;
+import com.github.atave.cmis.views.DocumentView;
 import com.github.atave.cmis.views.FileView;
 import com.github.atave.cmis.views.FolderView;
+import com.github.atave.cmis.views.RepositoryView;
 import com.github.atave.junderscore._map;
 import org.apache.chemistry.opencmis.client.api.*;
 import org.apache.chemistry.opencmis.client.util.FileUtils;
@@ -15,7 +16,8 @@ import org.apache.chemistry.opencmis.commons.exceptions.CmisRuntimeException;
 import org.apache.chemistry.opencmis.commons.impl.MimeTypes;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.ContentStreamImpl;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStream;
 import java.math.BigInteger;
 import java.util.*;
 
@@ -30,6 +32,7 @@ public abstract class CmisClient {
     private Folder currentFolder;
 
     // Helpers
+
     /**
      * Returns the {@link org.apache.chemistry.opencmis.client.api.SessionFactory} to use.
      */
@@ -57,7 +60,7 @@ public abstract class CmisClient {
         try {
             getObject(pathOrIdOfObject);
             return true;
-        } catch(RuntimeException e) {
+        } catch (RuntimeException e) {
             return false;
         }
     }
@@ -83,7 +86,7 @@ public abstract class CmisClient {
 
         try {
             document = (Document) getObject(pathOrIdOfObject);
-        } catch(ClassCastException cce) {
+        } catch (ClassCastException cce) {
             throw new IllegalArgumentException("Object is not a document!");
         }
 
@@ -98,6 +101,7 @@ public abstract class CmisClient {
     }
 
     // API
+
     /**
      * Returns the available repositories.
      */
@@ -112,6 +116,7 @@ public abstract class CmisClient {
 
     /**
      * Connects the client to a repository.
+     *
      * @param repositoryId see {@link com.github.atave.cmis.views.RepositoryView#getId()}
      */
     public void connect(String repositoryId) {
@@ -132,9 +137,9 @@ public abstract class CmisClient {
      * @param path the path to navigateTo to.
      */
     public void navigateTo(String path) {
-        if(path.equals("..") && !currentFolder.isRootFolder()) {
+        if (path.equals("..") && !currentFolder.isRootFolder()) {
             currentFolder = currentFolder.getFolderParent();
-        } else if(!path.equals(".")) {
+        } else if (!path.equals(".")) {
             currentFolder = getBareFolder(path);
         }
     }
@@ -185,7 +190,7 @@ public abstract class CmisClient {
      * Creates a subfolder.
      *
      * @param parent the parent folder
-     * @param name the subfolder name
+     * @param name   the subfolder name
      * @return the created folder
      */
     public FolderView createFolder(String parent, String name) {
@@ -196,13 +201,13 @@ public abstract class CmisClient {
     /**
      * Uploads a document.
      *
-     * @param parentIdOrPath the id or path of the parent folder
-     * @param fileName the source file
-     * @param mimeType the MIME Type of the source file
-     * @param inputStream the input stream
-     * @param length the source file length
+     * @param parentIdOrPath  the id or path of the parent folder
+     * @param fileName        the source file
+     * @param mimeType        the MIME Type of the source file
+     * @param inputStream     the input stream
+     * @param length          the source file length
      * @param versioningState the versioning state
-     * @param metadata additional properties for the uploaded files
+     * @param metadata        additional properties for the uploaded files
      * @return the uploaded document
      */
     public DocumentView upload(String parentIdOrPath, String fileName, String mimeType,
@@ -211,7 +216,7 @@ public abstract class CmisClient {
         String cmisType = BaseTypeId.CMIS_DOCUMENT.value();
         Folder parentFolder = getBareFolder(parentIdOrPath);
 
-        if(mimeType == null) {
+        if (mimeType == null) {
             mimeType = MimeTypes.getMIMEType(fileName);
         }
 
@@ -221,7 +226,7 @@ public abstract class CmisClient {
         properties.put(PropertyIds.NAME, fileName);
 
         // Setup cool properties
-        if(metadata != null) {
+        if (metadata != null) {
             properties.putAll(metadata);
         }
 
@@ -230,7 +235,7 @@ public abstract class CmisClient {
         Document document = null;
         String documentPath = parentFolder.getPath() + "/" + fileName;
         try {
-            if(exists(documentPath)) {
+            if (exists(documentPath)) {
                 // Create new version of an existing document
                 document = checkout(documentPath);
                 document.checkIn(versioningState == VersioningState.MAJOR, null, contentStream, checkInComment);
@@ -266,7 +271,6 @@ public abstract class CmisClient {
      *
      * @param documentPath the absolute path of the document
      * @param versionLabel the version of the document to delete
-     *
      * @see com.github.atave.cmis.views.DocumentView#getVersionLabel()
      */
     public void deleteDocument(String documentPath, String versionLabel) {
@@ -285,7 +289,7 @@ public abstract class CmisClient {
         return new _map<String, String>() {
             @Override
             protected String process(String objectId) {
-                if(isFolder(objectId)) {
+                if (isFolder(objectId)) {
                     return getBareFolder(objectId).getPath();
                 } else {
                     // Ignore multiple paths
@@ -298,8 +302,8 @@ public abstract class CmisClient {
     /**
      * Queries the current CMIS repository.
      *
-     * @param name a string that has to be contained in the name of the document
-     * @param text a string that has to be contained in the text of the document
+     * @param name     a string that has to be contained in the name of the document
+     * @param text     a string that has to be contained in the text of the document
      * @param metadata a set of additional properties the document must match
      * @return the result of the query as an {@link org.apache.chemistry.opencmis.client.api.ItemIterable}
      */
@@ -312,24 +316,24 @@ public abstract class CmisClient {
 
         List<String> whereClauses = new ArrayList<String>();
 
-        if(name != null && !name.equals("")) {
+        if (name != null && !name.equals("")) {
             whereClauses.add(PropertyIds.NAME + " LIKE " + escape(name));
         }
 
-        if(text != null && !text.equals("")) {
+        if (text != null && !text.equals("")) {
             whereClauses.add("CONTAINS(" + escape(text) + ")");
         }
 
-        for(String key : metadata.keySet()) {
+        for (String key : metadata.keySet()) {
             String val = metadata.get(key);
             whereClauses.add(key + " " + val);
         }
 
-        if(!whereClauses.isEmpty()) {
+        if (!whereClauses.isEmpty()) {
             queryBuilder.append(" WHERE");
 
-            for(int i = 0; i < whereClauses.size(); ++i) {
-                if(i != 0) {
+            for (int i = 0; i < whereClauses.size(); ++i) {
+                if (i != 0) {
                     queryBuilder.append(" AND ");
                 }
                 queryBuilder.append(whereClauses.get(i));

@@ -25,7 +25,7 @@ public class CmisClientTest {
         Collection<RepositoryView> repositories = client.getRepositories();
 
         // There is at least one repository
-        assertTrue(! repositories.isEmpty());
+        assertTrue(!repositories.isEmpty());
     }
 
     @Test

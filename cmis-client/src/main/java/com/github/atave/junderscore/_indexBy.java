@@ -13,7 +13,7 @@ public abstract class _indexBy<K, T> {
     public Map<K, T> on(Iterable<T> iterable) {
         Map<K, T> map = new HashMap<K, T>();
 
-        for(T o : iterable) {
+        for (T o : iterable) {
             map.put(process(o), o);
         }
 

@@ -15,7 +15,7 @@ public class _sample {
     public static <T> Collection<T> on(Collection<T> collection, int n) {
         List<T> source = new ArrayList<T>(collection);
         List<T> retval = new ArrayList<T>();
-        while(n-- > 0) {
+        while (n-- > 0) {
             int i = random.nextInt(retval.size());
             retval.add(source.remove(i));
         }

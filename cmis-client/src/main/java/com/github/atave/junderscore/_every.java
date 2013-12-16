@@ -10,8 +10,8 @@ public abstract class _every<T> {
     protected abstract boolean test(T object);
 
     public boolean on(Iterable<T> iterable) {
-        for(T o : iterable) {
-            if(!test(o)) {
+        for (T o : iterable) {
+            if (!test(o)) {
                 return false;
             }
         }

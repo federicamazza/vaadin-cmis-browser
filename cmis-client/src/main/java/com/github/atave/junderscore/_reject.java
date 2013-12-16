@@ -15,8 +15,8 @@ public abstract class _reject<T> {
 
     public Collection<T> on(Iterable<T> iterable) {
         Collection<T> retval = new ArrayList<T>();
-        for(T o : iterable) {
-            if(!test(o)) {
+        for (T o : iterable) {
+            if (!test(o)) {
                 retval.add(o);
             }
         }

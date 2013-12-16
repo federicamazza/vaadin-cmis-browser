@@ -1,6 +1,6 @@
 package com.github.atave.junderscore;
 
-import java.util.*;
+import java.util.Collection;
 
 public class JUnderscore {
 

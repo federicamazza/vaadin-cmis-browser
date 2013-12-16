@@ -19,11 +19,11 @@ public class _max<T> {
 
     public T on(Iterable<T> iterable, Comparator<T> comparator) {
         T max = null;
-        for(T o : iterable) {
-            if(max == null) {
+        for (T o : iterable) {
+            if (max == null) {
                 max = o;
             } else {
-                if(test(max, o, comparator)) {
+                if (test(max, o, comparator)) {
                     max = o;
                 }
             }
@@ -40,11 +40,11 @@ public class _max<T> {
         };
 
         T max = null;
-        for(T o : iterable) {
-            if(max == null) {
+        for (T o : iterable) {
+            if (max == null) {
                 max = o;
             } else {
-                if(testComparable(max, o, comparator)) {
+                if (testComparable(max, o, comparator)) {
                     max = o;
                 }
             }

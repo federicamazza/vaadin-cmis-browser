@@ -1,7 +1,9 @@
 package com.github.atave.cmis.views;
 
 import com.github.atave.junderscore._map;
-import org.apache.chemistry.opencmis.client.api.*;
+import org.apache.chemistry.opencmis.client.api.CmisObject;
+import org.apache.chemistry.opencmis.client.api.Document;
+import org.apache.chemistry.opencmis.client.api.Folder;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisObjectNotFoundException;
 
 import java.util.Collection;
@@ -34,9 +36,9 @@ public class FolderView extends FileView {
         return new _map<FileView, CmisObject>() {
             @Override
             protected FileView process(CmisObject object) {
-                if(object instanceof Document) {
+                if (object instanceof Document) {
                     return new DocumentView((Document) object);
-                } else if(object instanceof Folder) {
+                } else if (object instanceof Folder) {
                     return new FolderView((Folder) object);
                 } else {
                     return null;
@@ -51,9 +53,9 @@ public class FolderView extends FileView {
      * @return the parent folder object
      * @throws CmisObjectNotFoundException if this folder is already the root folder.
      */
-    public FolderView getParent() throws CmisObjectNotFoundException{
+    public FolderView getParent() throws CmisObjectNotFoundException {
         Folder parent = getDelegate().getFolderParent();
-        if(parent != null) {
+        if (parent != null) {
             return new FolderView(parent);
         } else {
             throw new CmisObjectNotFoundException("Folder #" + getId() + " is already the root folder");

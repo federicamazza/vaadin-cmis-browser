@@ -33,9 +33,9 @@ public class Config {
         }
 
         // Set defaults
-        if(globalProperties != properties) {
-            for(String property : globalProperties.stringPropertyNames()) {
-                if(properties.getProperty(property) == null) {
+        if (globalProperties != properties) {
+            for (String property : globalProperties.stringPropertyNames()) {
+                if (properties.getProperty(property) == null) {
                     String value = globalProperties.getProperty(property);
                     properties.setProperty(property, value);
                 }

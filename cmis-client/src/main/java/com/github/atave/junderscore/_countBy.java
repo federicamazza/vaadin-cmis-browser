@@ -16,11 +16,11 @@ public abstract class _countBy<K, T> {
     public Map<K, Integer> on(Iterable<T> iterable) {
         Map<K, Integer> map = new HashMap<K, Integer>();
 
-        for(T o : iterable) {
+        for (T o : iterable) {
             K key = process(o);
             Integer values = map.get(key);
 
-            if(values == null) {
+            if (values == null) {
                 values = 0;
             }
 
