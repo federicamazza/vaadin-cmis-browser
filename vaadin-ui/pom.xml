@@ -10,7 +10,6 @@
     <artifactId>vaadin-ui</artifactId>
     <packaging>war</packaging>
     <version>1.0-SNAPSHOT</version>
-    <name>Vaadin Web Application</name>
 
 
     <properties>
@@ -92,6 +91,13 @@
             <version>3.0.1</version>
             <scope>provided</scope>
         </dependency>
+
+        <!-- Module dependency -->
+        <dependency>
+            <groupId>com.github.atave</groupId>
+            <artifactId>cmis-client</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
     </dependencies>
 
 
@@ -154,6 +160,7 @@
             <plugin>
                 <groupId>org.mortbay.jetty</groupId>
                 <artifactId>jetty-maven-plugin</artifactId>
+
             </plugin>
         </plugins>
         <pluginManagement>
