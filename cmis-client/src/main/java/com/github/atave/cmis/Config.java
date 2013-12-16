@@ -1,5 +1,8 @@
 package com.github.atave.cmis;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
@@ -10,6 +13,8 @@ import java.util.Properties;
  */
 public class Config {
 
+    static Logger logger = LoggerFactory.getLogger(Config.class);
+
     static Properties properties = new Properties();
 
     private static InputStream getResource(String name) {
@@ -19,21 +24,28 @@ public class Config {
     static {
         // Load global.properties
         Properties globalProperties = new Properties();
-        try {
-            globalProperties.load(getResource("/global.properties"));
+
+        try (InputStream inputStream = getResource("/global.properties")) {
+            if (inputStream != null) {
+                globalProperties.load(inputStream);
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
 
         // Load local.properties
-        try {
-            properties.load(getResource("/local.properties"));
+        try (InputStream inputStream = getResource("/local.properties")) {
+            if (inputStream != null) {
+                properties.load(inputStream);
+            } else {
+                properties = globalProperties;
+            }
         } catch (IOException e) {
             properties = globalProperties;
         }
 
         // Set defaults
-        if (globalProperties != properties) {
+        if (properties != globalProperties) {
             for (String property : globalProperties.stringPropertyNames()) {
                 if (properties.getProperty(property) == null) {
                     String value = globalProperties.getProperty(property);
@@ -43,7 +55,16 @@ public class Config {
         }
     }
 
+    /**
+     * @see java.util.Properties#getProperty(String)
+     */
     public static String get(String name) {
-        return properties.getProperty(name);
+        String property = properties.getProperty(name);
+
+        if (property == null) {
+            logger.error("Property not found: {}", name);
+        }
+
+        return property;
     }
 }
