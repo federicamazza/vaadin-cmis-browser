@@ -23,3 +23,7 @@ war/WEB-INF/classes/
 
 # Also ignore pure CSS files
 *.css
+
+
+### Vaadin ###
+/src/main/webapp/VAADIN/widgetsets/
