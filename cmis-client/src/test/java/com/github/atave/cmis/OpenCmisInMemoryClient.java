@@ -1,4 +1,4 @@
-package VaadinCmisBrowser.cmis;
+package com.github.atave.cmis;
 
 import org.apache.chemistry.opencmis.client.api.SessionFactory;
 import org.apache.chemistry.opencmis.client.runtime.SessionFactoryImpl;
@@ -16,7 +16,7 @@ public class OpenCmisInMemoryClient extends CmisClient {
     }
 
     /**
-     * Returns the {@link VaadinCmisBrowser.cmis.SessionParametersFactory} used to configure new {@code Session}s.
+     * Returns the {@link com.github.atave.cmis.SessionParametersFactory} used to configure new {@code Session}s.
      */
     @Override
     protected SessionParametersFactory getSessionParametersFactory() {

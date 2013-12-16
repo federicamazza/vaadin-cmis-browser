@@ -1,4 +1,4 @@
-package VaadinCmisBrowser.cmis.views;
+package com.github.atave.cmis.views;
 
 import com.github.atave.junderscore.Lambda1;
 import org.apache.chemistry.opencmis.client.api.Document;

@@ -1,13 +1,13 @@
-package VaadinCmisBrowser.cmis.alfresco;
+package com.github.atave.cmis.alfresco;
 
-import VaadinCmisBrowser.cmis.CmisClient;
-import VaadinCmisBrowser.cmis.SessionParametersFactory;
+import com.github.atave.cmis.CmisClient;
+import com.github.atave.cmis.SessionParametersFactory;
 import org.apache.chemistry.opencmis.client.api.SessionFactory;
 import org.apache.chemistry.opencmis.client.runtime.SessionFactoryImpl;
 
 
 /**
- * A {@link VaadinCmisBrowser.cmis.CmisClient} implementation for Alfresco.
+ * A {@link com.github.atave.cmis.CmisClient} implementation for Alfresco.
  */
 public class AlfrescoClient extends CmisClient {
 

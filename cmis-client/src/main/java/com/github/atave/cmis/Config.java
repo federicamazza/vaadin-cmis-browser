@@ -1,4 +1,4 @@
-package VaadinCmisBrowser.cmis;
+package com.github.atave.cmis;
 
 import java.io.IOException;
 import java.io.InputStream;

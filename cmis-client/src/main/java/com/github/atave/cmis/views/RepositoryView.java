@@ -1,4 +1,4 @@
-package VaadinCmisBrowser.cmis.views;
+package com.github.atave.cmis.views;
 
 import org.apache.chemistry.opencmis.client.api.Repository;
 

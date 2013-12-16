@@ -1,4 +1,4 @@
-package VaadinCmisBrowser.cmis;
+package com.github.atave.cmis;
 
 import org.apache.chemistry.opencmis.commons.SessionParameter;
 import org.apache.chemistry.opencmis.commons.enums.BindingType;

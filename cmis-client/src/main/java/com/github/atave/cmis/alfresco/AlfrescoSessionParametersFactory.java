@@ -1,7 +1,7 @@
-package VaadinCmisBrowser.cmis.alfresco;
+package com.github.atave.cmis.alfresco;
 
-import VaadinCmisBrowser.cmis.Config;
-import VaadinCmisBrowser.cmis.HttpAuthSessionParametersFactory;
+import com.github.atave.cmis.Config;
+import com.github.atave.cmis.HttpAuthSessionParametersFactory;
 
 public class AlfrescoSessionParametersFactory extends HttpAuthSessionParametersFactory {
 

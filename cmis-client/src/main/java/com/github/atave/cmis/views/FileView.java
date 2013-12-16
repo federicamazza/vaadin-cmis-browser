@@ -1,4 +1,4 @@
-package VaadinCmisBrowser.cmis.views;
+package com.github.atave.cmis.views;
 
 import com.github.atave.junderscore._map;
 import org.apache.chemistry.opencmis.client.api.*;
@@ -20,14 +20,14 @@ public class FileView {
     }
 
     /**
-     * Casts itself as a {@link VaadinCmisBrowser.cmis.views.DocumentView}.
+     * Casts itself as a {@link com.github.atave.cmis.views.DocumentView}.
      */
     public DocumentView asDocument() {
         return (DocumentView) this;
     }
 
     /**
-     * Casts itself as a {@link VaadinCmisBrowser.cmis.views.FolderView}.
+     * Casts itself as a {@link com.github.atave.cmis.views.FolderView}.
      */
     public FolderView asFolder() {
         return (FolderView) this;

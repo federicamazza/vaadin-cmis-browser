@@ -14,11 +14,11 @@ import com.vaadin.ui.VerticalLayout;
 
 @Theme("mytheme")
 @SuppressWarnings("serial")
-public class MyVaadinUI extends UI
+public class AppUI extends UI
 {
 
     @WebServlet(value = "/*", asyncSupported = true)
-    @VaadinServletConfiguration(productionMode = false, ui = MyVaadinUI.class, widgetset = "com.github.atave.AppWidgetSet")
+    @VaadinServletConfiguration(productionMode = false, ui = AppUI.class, widgetset = "com.github.atave.AppWidgetSet")
     public static class Servlet extends VaadinServlet {
     }
 

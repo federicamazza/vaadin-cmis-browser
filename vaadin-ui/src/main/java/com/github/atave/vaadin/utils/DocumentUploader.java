@@ -1,7 +1,7 @@
-package VaadinCmisBrowser.vaadin.utils;
+package com.github.atave.vaadin.utils;
 
-import VaadinCmisBrowser.cmis.CmisClient;
-import VaadinCmisBrowser.cmis.views.DocumentView;
+import com.github.atave.cmis.CmisClient;
+import com.github.atave.cmis.views.DocumentView;
 import com.vaadin.ui.Upload;
 import org.apache.chemistry.opencmis.commons.enums.VersioningState;
 
