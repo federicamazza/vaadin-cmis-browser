@@ -13,16 +13,48 @@
         <module>vaadin-ui</module>
     </modules>
 
+    <properties>
+        <git-mvn-repo>https://github.com/atave/vaadin-cmis-browser/raw/mvn-repo/snapshots</git-mvn-repo>
+        <git-mvn-repo-snapshots>${git-mvn-repo}/snapshots</git-mvn-repo-snapshots>
+        <git-mvn-repo-releases>${git-mvn-repo}/snapshots</git-mvn-repo-releases>
+    </properties>
+
     <distributionManagement>
-        <repository>
-            <id>git-releases</id>
-            <url>https://github.com/atave/vaadin-cmis-browser/raw/mvn-repo/releases</url>
-        </repository>
         <snapshotRepository>
             <id>git-snapshots</id>
-            <url>https://github.com/atave/vaadin-cmis-browser/raw/mvn-repo/snapshots</url>
+            <url>${git-mvn-repo-snapshots}</url>
         </snapshotRepository>
+        <repository>
+            <id>git-releases</id>
+            <url>${git-mvn-repo-releases}</url>
+        </repository>
     </distributionManagement>
+
+    <repositories>
+        <repository>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+                <updatePolicy>interval:5</updatePolicy>
+                <checksumPolicy>fail</checksumPolicy>
+            </snapshots>
+            <id>git-snapshots</id>
+            <url>${git-mvn-repo-snapshots}</url>
+        </repository>
+        <repository>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+            <releases>
+                <enabled>true</enabled>
+                <checksumPolicy>fail</checksumPolicy>
+            </releases>
+            <id>git-releases</id>
+            <url>${git-mvn-repo-releases}</url>
+        </repository>
+    </repositories>
 
     <dependencies>
         <!-- JUnit -->
