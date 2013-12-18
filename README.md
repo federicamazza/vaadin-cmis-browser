@@ -1,7 +1,7 @@
 # Project Structure
 This is a Maven project with two modules:
 - **cmis-client**: implements a simple CMIS client that builds upon [Apache Chemistry OpenCMIS](http://chemistry.apache.org/java/opencmis.html) to provide a far less granular interface to a CMIS repository
-- **vaadin-ui**: implements the web interface of the application with [vaadin](https://vaadin.com/).
+- **vaadin-ui**: implements the web interface of the application with [vaadin](https://vaadin.com/)
 
 # Development guide
 
@@ -10,13 +10,13 @@ This is a Maven project with two modules:
 
 1. Clone your fork
 ```sh
-$ git clone https://github.com/&lt;username&gt;/vaadin-cmis-browser.git --single-branch
+$ git clone https://github.com/username/vaadin-cmis-browser.git --single-branch
 ```
 
 1. Create your personal branch for development
 ```sh
 $ cd vaadin-cmis-browser
-$ git checkout -b <b>username</b>
+$ git checkout -b username
 ```
 
 1. Configure remotes
@@ -30,8 +30,8 @@ $ cd vaadin-ui
 $ mvn jetty:run
 ```
 
-1. If jetty starts you can press [CTRL + C] to stop it.
-   Otherwise, something went wrong.
+1. If jetty starts, check out in your browser the following addresses: [1](http://localhost:8080) and [2](http://localhost:8080/opencmis-inmemory/)
+
 
 ## Workflow
 1. Write your code
@@ -52,4 +52,5 @@ $ git merge upstream/master
 ```
 
 ## Notes
-- the *mvn-repo* branch is an embedded Maven repository used to distribute **cmis-client** updates as soon as they are ready in order to not having to manually run `mvn install` every time that module is updated: ignore it
+- The *mvn-repo* branch is an embedded Maven repository used to distribute **cmis-client** updates as soon as they are ready.  
+If a build fails, try to run it again like so: `mvn -U clean your_goals`.
