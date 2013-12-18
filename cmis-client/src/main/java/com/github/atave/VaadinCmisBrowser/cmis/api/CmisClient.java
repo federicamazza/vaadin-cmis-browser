@@ -1,9 +1,5 @@
-package com.github.atave.cmis;
+package com.github.atave.VaadinCmisBrowser.cmis.api;
 
-import com.github.atave.cmis.views.DocumentView;
-import com.github.atave.cmis.views.FileView;
-import com.github.atave.cmis.views.FolderView;
-import com.github.atave.cmis.views.RepositoryView;
 import com.github.atave.junderscore._map;
 import org.apache.chemistry.opencmis.client.api.*;
 import org.apache.chemistry.opencmis.client.util.FileUtils;
@@ -117,7 +113,7 @@ public abstract class CmisClient {
     /**
      * Connects the client to a repository.
      *
-     * @param repositoryId see {@link com.github.atave.cmis.views.RepositoryView#getId()}
+     * @param repositoryId see {@link RepositoryView#getId()}
      */
     public void connect(String repositoryId) {
         currentSession = getSessionFactory().createSession(getSessionParametersFactory().newInstance(repositoryId));
@@ -271,7 +267,7 @@ public abstract class CmisClient {
      *
      * @param documentPath the absolute path of the document
      * @param versionLabel the version of the document to delete
-     * @see com.github.atave.cmis.views.DocumentView#getVersionLabel()
+     * @see DocumentView#getVersionLabel()
      */
     public void deleteDocument(String documentPath, String versionLabel) {
         DocumentView documentView = new DocumentView(getBareDocument(documentPath)).getObjectOfVersion(versionLabel);

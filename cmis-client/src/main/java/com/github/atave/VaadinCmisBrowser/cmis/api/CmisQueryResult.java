@@ -1,6 +1,5 @@
-package com.github.atave.cmis;
+package com.github.atave.VaadinCmisBrowser.cmis.api;
 
-import com.github.atave.cmis.views.DocumentView;
 import org.apache.chemistry.opencmis.client.api.ItemIterable;
 import org.apache.chemistry.opencmis.client.api.QueryResult;
 import org.apache.chemistry.opencmis.commons.PropertyIds;
@@ -59,7 +58,7 @@ public class CmisQueryResult implements ItemIterable<DocumentView> {
 
     /**
      * A wrapper iterator that converts a {@link org.apache.chemistry.opencmis.client.api.QueryResult}
-     * into a {@link com.github.atave.cmis.views.DocumentView} using the {@code objectId}.
+     * into a {@link DocumentView} using the {@code objectId}.
      */
     private class _Iterator implements Iterator<DocumentView> {
 

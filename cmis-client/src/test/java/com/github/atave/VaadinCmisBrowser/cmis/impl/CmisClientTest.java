@@ -1,6 +1,7 @@
-package com.github.atave.cmis;
+package com.github.atave.VaadinCmisBrowser.cmis.impl;
 
-import com.github.atave.cmis.views.RepositoryView;
+import com.github.atave.VaadinCmisBrowser.cmis.api.CmisClient;
+import com.github.atave.VaadinCmisBrowser.cmis.api.RepositoryView;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

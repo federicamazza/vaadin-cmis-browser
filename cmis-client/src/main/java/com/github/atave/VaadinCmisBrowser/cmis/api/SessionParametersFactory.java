@@ -1,4 +1,4 @@
-package com.github.atave.cmis;
+package com.github.atave.VaadinCmisBrowser.cmis.api;
 
 import org.apache.chemistry.opencmis.commons.SessionParameter;
 

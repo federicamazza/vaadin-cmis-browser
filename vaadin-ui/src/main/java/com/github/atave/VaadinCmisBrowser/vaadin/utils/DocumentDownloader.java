@@ -1,6 +1,6 @@
-package com.github.atave.vaadin.utils;
+package com.github.atave.VaadinCmisBrowser.vaadin.utils;
 
-import com.github.atave.cmis.views.DocumentView;
+import com.github.atave.VaadinCmisBrowser.cmis.api.DocumentView;
 import com.vaadin.server.StreamResource;
 
 import java.io.InputStream;

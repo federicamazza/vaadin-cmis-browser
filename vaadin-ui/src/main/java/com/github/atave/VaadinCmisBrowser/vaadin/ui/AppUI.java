@@ -1,4 +1,4 @@
-package com.github.atave;
+package com.github.atave.VaadinCmisBrowser.vaadin.ui;
 
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.VaadinServletConfiguration;
@@ -17,7 +17,7 @@ import javax.servlet.annotation.WebServlet;
 public class AppUI extends UI {
 
     @WebServlet(value = "/*", asyncSupported = true)
-    @VaadinServletConfiguration(productionMode = false, ui = AppUI.class, widgetset = "com.github.atave.AppWidgetSet")
+    @VaadinServletConfiguration(productionMode = false, ui = AppUI.class, widgetset = "com.github.atave.VaadinCmisBrowser.vaadin.ui.AppWidgetSet")
     public static class Servlet extends VaadinServlet {
     }
 
