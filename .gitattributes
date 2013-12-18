@@ -1,0 +1,6 @@
+# Force lf line endings on commits by default
+* text=auto
+
+# Make sure git handles jars and wars as binary files
+*.jar binary
+*.war binary
