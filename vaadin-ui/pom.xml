@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <artifactId>vaadin-cmis-browser</artifactId>
-        <groupId>com.github.atave</groupId>
+        <groupId>com.github.atave.vaadin-cmis-browser</groupId>
         <version>1.0-SNAPSHOT</version>
     </parent>
     <artifactId>vaadin-ui</artifactId>
@@ -94,7 +94,7 @@
 
         <!-- Module dependency -->
         <dependency>
-            <groupId>com.github.atave</groupId>
+            <groupId>com.github.atave.vaadin-cmis-browser</groupId>
             <artifactId>cmis-client</artifactId>
             <version>0.1-SNAPSHOT</version>
         </dependency>
