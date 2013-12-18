@@ -8,7 +8,7 @@
     <version>0.1-SNAPSHOT</version>
 
     <parent>
-        <groupId>com.github.atave</groupId>
+        <groupId>com.github.atave.vaadin-cmis-browser</groupId>
         <artifactId>vaadin-cmis-browser</artifactId>
         <version>1.0-SNAPSHOT</version>
     </parent>

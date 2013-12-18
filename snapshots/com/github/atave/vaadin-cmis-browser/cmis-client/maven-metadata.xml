@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <metadata>
-  <groupId>com.github.atave</groupId>
+  <groupId>com.github.atave.vaadin-cmis-browser</groupId>
   <artifactId>cmis-client</artifactId>
   <versioning>
     <versions>
       <version>0.1-SNAPSHOT</version>
     </versions>
-    <lastUpdated>20131218110617</lastUpdated>
+    <lastUpdated>20131218140038</lastUpdated>
   </versioning>
 </metadata>
