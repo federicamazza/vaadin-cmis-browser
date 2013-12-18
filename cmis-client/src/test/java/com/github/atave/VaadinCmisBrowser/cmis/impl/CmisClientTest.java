@@ -26,7 +26,7 @@ public class CmisClientTest {
         server = new Server(8080);
         WebAppContext webApp = new WebAppContext();
         webApp.setContextPath("/opencmis-inmemory");
-        webApp.setWar("lib/chemistry-opencmis-server-inmemory-0.10.0.war");
+        webApp.setWar("../lib/chemistry-opencmis-server-inmemory-0.10.0.war");
         server.setHandler(webApp);
         server.start();
     }

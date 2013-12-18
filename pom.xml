@@ -17,6 +17,9 @@
         <git.mvn.repo>https://github.com/atave/vaadin-cmis-browser/raw/mvn-repo/snapshots</git.mvn.repo>
         <git.mvn.repo.snapshots>${git.mvn.repo}/snapshots</git.mvn.repo.snapshots>
         <git.mvn.repo.releases>${git.mvn.repo}/releases</git.mvn.repo.releases>
+        <jetty.version>9.0.7.v20131107</jetty.version>
+        <slf4j.version>1.7.5</slf4j.version>
+        <opencmis.version>0.10.0</opencmis.version>
     </properties>
 
     <distributionManagement>
@@ -57,6 +60,28 @@
     </repositories>
 
     <dependencies>
+        <!-- OpenCMIS -->
+        <dependency>
+            <groupId>org.apache.chemistry.opencmis</groupId>
+            <artifactId>chemistry-opencmis-commons-api</artifactId>
+            <version>${opencmis.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.chemistry.opencmis</groupId>
+            <artifactId>chemistry-opencmis-client-api</artifactId>
+            <version>${opencmis.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.chemistry.opencmis</groupId>
+            <artifactId>chemistry-opencmis-commons-impl</artifactId>
+            <version>${opencmis.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.chemistry.opencmis</groupId>
+            <artifactId>chemistry-opencmis-client-impl</artifactId>
+            <version>${opencmis.version}</version>
+        </dependency>
+        
         <!-- JUnit -->
         <dependency>
             <groupId>junit</groupId>
@@ -68,8 +93,28 @@
         <!-- slf4j binding -->
         <dependency>
             <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>${slf4j.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
             <artifactId>slf4j-simple</artifactId>
-            <version>1.7.5</version>
+            <version>${slf4j.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- Jetty -->
+        <dependency>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-server</artifactId>
+            <version>${jetty.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-webapp</artifactId>
+            <version>${jetty.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
