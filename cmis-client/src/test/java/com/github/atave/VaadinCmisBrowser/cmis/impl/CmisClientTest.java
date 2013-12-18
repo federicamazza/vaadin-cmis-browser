@@ -2,7 +2,11 @@ package com.github.atave.VaadinCmisBrowser.cmis.impl;
 
 import com.github.atave.VaadinCmisBrowser.cmis.api.CmisClient;
 import com.github.atave.VaadinCmisBrowser.cmis.api.RepositoryView;
+import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.webapp.WebAppContext;
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
@@ -15,10 +19,26 @@ import static org.junit.Assert.*;
 public class CmisClientTest {
 
     private CmisClient client;
+    private static Server server;
+
+    @BeforeClass
+    public static void setUpOnce() throws Exception {
+        server = new Server(8080);
+        WebAppContext webApp = new WebAppContext();
+        webApp.setContextPath("/opencmis-inmemory");
+        webApp.setWar("lib/chemistry-opencmis-server-inmemory-0.10.0.war");
+        server.setHandler(webApp);
+        server.start();
+    }
 
     @Before
     public void setUp() {
         client = new OpenCmisInMemoryClient();
+    }
+
+    @AfterClass
+    public static void tearDownOnce() throws Exception {
+        server.stop();
     }
 
     @Test

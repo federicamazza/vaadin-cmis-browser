@@ -24,61 +24,15 @@
         <!-- Jetty -->
         <dependency>
             <groupId>org.eclipse.jetty</groupId>
-            <artifactId>jetty-jsp</artifactId>
+            <artifactId>jetty-server</artifactId>
             <version>9.0.7.v20131107</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.eclipse.jetty</groupId>
-            <artifactId>jetty-util</artifactId>
+            <artifactId>jetty-webapp</artifactId>
             <version>9.0.7.v20131107</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
-
-    <build>
-        <plugins>
-            <!-- Maven Surefire Plugin -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <version>2.16</version>
-            </plugin>
-
-            <!-- Maven Jetty Plugin -->
-            <plugin>
-                <groupId>org.eclipse.jetty</groupId>
-                <artifactId>jetty-maven-plugin</artifactId>
-                <version>9.0.7.v20131107</version>
-                <configuration>
-                    <stopPort>9001</stopPort>
-                    <stopKey>STOP</stopKey>
-                    <war>${basedir}/lib/chemistry-opencmis-server-inmemory-0.10.0.war</war>
-                    <webApp>
-                        <contextPath>/opencmis-inmemory</contextPath>
-                    </webApp>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>start-jetty</id>
-                        <phase>test-compile</phase>
-                        <goals>
-                            <goal>deploy-war</goal>
-                        </goals>
-                        <configuration>
-                            <daemon>true</daemon>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>stop-jetty</id>
-                        <phase>test</phase>
-                        <goals>
-                            <goal>stop</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
-    </build>
-
 </project>
