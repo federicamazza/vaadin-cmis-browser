@@ -14,7 +14,7 @@
     </modules>
 
     <properties>
-        <git.mvn.repo>https://github.com/atave/vaadin-cmis-browser/raw/mvn-repo/</git.mvn.repo>
+        <git.mvn.repo>https://github.com/atave/vaadin-cmis-browser/raw/mvn-repo</git.mvn.repo>
         <git.mvn.repo.snapshots>${git.mvn.repo}/snapshots</git.mvn.repo.snapshots>
         <git.mvn.repo.releases>${git.mvn.repo}/releases</git.mvn.repo.releases>
         <jetty.version>9.0.7.v20131107</jetty.version>
