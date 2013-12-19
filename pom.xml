@@ -14,7 +14,7 @@
     </modules>
 
     <properties>
-        <git.mvn.repo>https://github.com/atave/vaadin-cmis-browser/raw/mvn-repo/snapshots</git.mvn.repo>
+        <git.mvn.repo>https://github.com/atave/vaadin-cmis-browser/raw/mvn-repo/</git.mvn.repo>
         <git.mvn.repo.snapshots>${git.mvn.repo}/snapshots</git.mvn.repo.snapshots>
         <git.mvn.repo.releases>${git.mvn.repo}/releases</git.mvn.repo.releases>
         <jetty.version>9.0.7.v20131107</jetty.version>
@@ -32,32 +32,6 @@
             <url>${git.mvn.repo.releases}</url>
         </repository>
     </distributionManagement>
-
-    <repositories>
-        <repository>
-            <releases>
-                <enabled>false</enabled>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-                <updatePolicy>interval:5</updatePolicy>
-                <checksumPolicy>fail</checksumPolicy>
-            </snapshots>
-            <id>git-snapshots</id>
-            <url>${git.mvn.repo.snapshots}</url>
-        </repository>
-        <repository>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-            <releases>
-                <enabled>true</enabled>
-                <checksumPolicy>fail</checksumPolicy>
-            </releases>
-            <id>git-releases</id>
-            <url>${git.mvn.repo.releases}</url>
-        </repository>
-    </repositories>
 
     <dependencies>
         <!-- OpenCMIS -->
@@ -95,13 +69,13 @@
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
             <version>${slf4j.version}</version>
-            <scope>test</scope>
+            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-simple</artifactId>
             <version>${slf4j.version}</version>
-            <scope>test</scope>
+            <scope>compile</scope>
         </dependency>
 
         <!-- Jetty -->
