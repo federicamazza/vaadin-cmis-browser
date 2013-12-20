@@ -10,18 +10,30 @@ import org.apache.chemistry.opencmis.client.runtime.SessionFactoryImpl;
  */
 public class AlfrescoClient extends HttpAuthCmisClient {
 
-    private static final String ATOMPUB_URL = "alfresco.cmis.atompub.url";
+    public static final String ATOMPUB_URL = "alfresco.cmis.atompub.url";
 
-    public AlfrescoClient(String user, String password) {
-        super(user, password);
+    /**
+     * Creates a new {@code AlfrescoClient}.
+     *
+     * @param user       the client's user
+     * @param password   the client's password
+     * @param atomPubUrl the client's AtomPub binding URL
+     */
+    public AlfrescoClient(String user, String password, String atomPubUrl) {
+        super(user, password, atomPubUrl);
 
         // Alfresco only supports one repository
         connect(getRepositories().iterator().next().getId());
     }
 
-    @Override
-    protected String getAtomPubUrl() {
-        return Config.get(ATOMPUB_URL);
+    /**
+     * Creates a new {@code AlfrescoClient} with the default AtomPub binding URL.
+     *
+     * @param user     the client's user
+     * @param password the client's password
+     */
+    public AlfrescoClient(String user, String password) {
+        this(user, password, Config.get(ATOMPUB_URL));
     }
 
     @Override

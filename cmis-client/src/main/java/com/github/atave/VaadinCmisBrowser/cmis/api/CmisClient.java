@@ -6,8 +6,10 @@ import org.apache.chemistry.opencmis.client.util.FileUtils;
 import org.apache.chemistry.opencmis.commons.PropertyIds;
 import org.apache.chemistry.opencmis.commons.data.ContentStream;
 import org.apache.chemistry.opencmis.commons.enums.BaseTypeId;
+import org.apache.chemistry.opencmis.commons.enums.ContentStreamAllowed;
 import org.apache.chemistry.opencmis.commons.enums.UnfileObject;
 import org.apache.chemistry.opencmis.commons.enums.VersioningState;
+import org.apache.chemistry.opencmis.commons.exceptions.CmisBaseException;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisRuntimeException;
 import org.apache.chemistry.opencmis.commons.impl.MimeTypes;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.ContentStreamImpl;
@@ -26,6 +28,7 @@ public abstract class CmisClient {
     // CmisClient state
     private Session currentSession;
     private Folder currentFolder;
+    private String versionableCmisType;
 
     // Helpers
 
@@ -38,6 +41,34 @@ public abstract class CmisClient {
      * Returns the {@link SessionParametersFactory} used to configure new {@code Session}s.
      */
     protected abstract SessionParametersFactory getSessionParametersFactory();
+
+    /**
+     * Returns the versionable cmis type for the current session, since cmis:document
+     * is actually not versionable.
+     */
+    private String getVersionableCmisType() {
+        return getVersionableCmisType(currentSession.getTypeDescendants(null, -1, true));
+    }
+
+    private String getVersionableCmisType(List<Tree<ObjectType>> trees) {
+        for (Tree<ObjectType> tree : trees) {
+            ObjectType objectType = tree.getItem();
+            if (objectType instanceof DocumentType) {
+                DocumentType documentType = (DocumentType) objectType;
+                if (documentType.getContentStreamAllowed() == ContentStreamAllowed.ALLOWED
+                        && documentType.isVersionable()) {
+                    return documentType.getId();
+                }
+            }
+
+            String versionableCmisType = getVersionableCmisType(tree.getChildren());
+            if (versionableCmisType != null) {
+                return versionableCmisType;
+            }
+        }
+
+        return null;
+    }
 
     /**
      * Gets an object by path or object id.
@@ -114,10 +145,12 @@ public abstract class CmisClient {
      * Connects the client to a repository.
      *
      * @param repositoryId see {@link RepositoryView#getId()}
+     * @throws CmisBaseException if the connection could not be established
      */
-    public void connect(String repositoryId) {
+    public void connect(String repositoryId) throws CmisBaseException {
         currentSession = getSessionFactory().createSession(getSessionParametersFactory().newInstance(repositoryId));
         currentFolder = currentSession.getRootFolder();
+        versionableCmisType = getVersionableCmisType();
     }
 
     /**
@@ -143,8 +176,22 @@ public abstract class CmisClient {
     /**
      * Returns the files in the current directory.
      */
-    public Collection<FileView> listCurrentFolder() {
+    public Collection<FileView> getChildren() {
         return new FolderView(currentFolder).getChildren();
+    }
+
+    /**
+     * Returns the documents in the current directory.
+     */
+    public Collection<DocumentView> getDocuments() {
+        return new FolderView(currentFolder).getDocuments();
+    }
+
+    /**
+     * Returns the folders in the current directory.
+     */
+    public Collection<FolderView> getFolders() {
+        return new FolderView(currentFolder).getFolders();
     }
 
     /**
@@ -183,7 +230,7 @@ public abstract class CmisClient {
     }
 
     /**
-     * Creates a subfolder.
+     * Creates a subfolder of the specified parent.
      *
      * @param parent the parent folder
      * @param name   the subfolder name
@@ -192,6 +239,16 @@ public abstract class CmisClient {
     public FolderView createFolder(String parent, String name) {
         Folder folder = FileUtils.createFolder(parent, name, null, currentSession);
         return new FolderView(folder);
+    }
+
+    /**
+     * Creates a subfolder of the current folder.
+     *
+     * @param name the subfolder name
+     * @return the created folder
+     */
+    public FolderView createFolder(String name) {
+        return createFolder(currentFolder.getPath(), name);
     }
 
     /**
@@ -209,7 +266,7 @@ public abstract class CmisClient {
     public DocumentView upload(String parentIdOrPath, String fileName, String mimeType,
                                InputStream inputStream, BigInteger length, VersioningState versioningState,
                                String checkInComment, Map<? extends String, ?> metadata) {
-        String cmisType = BaseTypeId.CMIS_DOCUMENT.value();
+        String cmisType = versionableCmisType;
         Folder parentFolder = getBareFolder(parentIdOrPath);
 
         if (mimeType == null) {
@@ -229,7 +286,13 @@ public abstract class CmisClient {
         ContentStream contentStream = new ContentStreamImpl(fileName, length, mimeType, inputStream);
 
         Document document = null;
-        String documentPath = parentFolder.getPath() + "/" + fileName;
+
+        String documentPath = parentFolder.getPath();
+        if (!documentPath.endsWith("/")) {
+            documentPath += "/";
+        }
+        documentPath += fileName;
+
         try {
             if (exists(documentPath)) {
                 // Create new version of an existing document
@@ -271,7 +334,7 @@ public abstract class CmisClient {
      */
     public void deleteDocument(String documentPath, String versionLabel) {
         DocumentView documentView = new DocumentView(getBareDocument(documentPath)).getObjectOfVersion(versionLabel);
-        getBareDocument(documentView.getId()).delete();
+        getBareDocument(documentView.getId()).delete(false);
     }
 
     /**

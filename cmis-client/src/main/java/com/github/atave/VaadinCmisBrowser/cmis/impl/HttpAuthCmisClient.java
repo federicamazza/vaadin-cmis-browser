@@ -17,13 +17,15 @@ public abstract class HttpAuthCmisClient extends CmisClient {
 
     private final String user;
     private final String password;
+    private final String atomPubUrl;
 
     /**
      * Constructs an {@code HttpAuthCmisClient} with the provided credentials.
      */
-    protected HttpAuthCmisClient(String user, String password) {
+    protected HttpAuthCmisClient(String user, String password, String atomPubUrl) {
         this.user = user;
         this.password = password;
+        this.atomPubUrl = atomPubUrl;
     }
 
     /**
@@ -43,7 +45,9 @@ public abstract class HttpAuthCmisClient extends CmisClient {
     /**
      * Returns the AtomPub binding URL for this client.
      */
-    protected abstract String getAtomPubUrl();
+    protected String getAtomPubUrl() {
+        return atomPubUrl;
+    }
 
     @Override
     protected SessionParametersFactory getSessionParametersFactory() {
