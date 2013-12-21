@@ -71,9 +71,6 @@ public class CmisClientTest {
         int port = ((ServerConnector) server.getConnectors()[0]).getLocalPort();
         String atomPubUrl = "http://localhost:" + port + contextPath + "/atom11";
         client = new OpenCmisInMemoryClient(Config.get(USER), Config.get(PASSWORD), atomPubUrl);
-
-        // Connect to the first repository
-        client.connect(client.getRepositories().iterator().next().getId());
     }
 
     @After
@@ -91,17 +88,19 @@ public class CmisClientTest {
 
     @Test
     public void listCurrentFolder() {
-        assertEquals(client.getDocuments().size(), Integer.parseInt(Config.get(DOCS_PER_FOLDER)));
-        assertEquals(client.getFolders().size(), Integer.parseInt(Config.get(FOLDER_PER_FOLDER)));
+        FolderView folder = client.getCurrentFolder();
+        assertEquals(folder.getDocuments().size(), Integer.parseInt(Config.get(DOCS_PER_FOLDER)));
+        assertEquals(folder.getFolders().size(), Integer.parseInt(Config.get(FOLDER_PER_FOLDER)));
     }
 
     @Test
     public void navigateTo() {
-        for (FolderView folder : client.getFolders()) {
+        FolderView currentFolder = client.getCurrentFolder();
+        for (FolderView folder : currentFolder.getFolders()) {
             client.navigateTo(folder.getPath());
-            assertEquals(folder.getPath(), client.getCurrentPath());
+            assertEquals(folder.getPath(), client.getCurrentFolder().getPath());
             client.navigateTo("..");
-            assertEquals(folder.getParent().getPath(), client.getCurrentPath());
+            assertEquals(folder.getParent().getPath(), currentFolder.getPath());
         }
     }
 
@@ -113,7 +112,7 @@ public class CmisClientTest {
     @Test
     public void createFolder() {
         final String name = "CreatedFolder";
-        for (FolderView folder : client.getFolders()) {
+        for (FolderView folder : client.getCurrentFolder().getFolders()) {
             FolderView createdFolder = client.createFolder(folder.getPath(), name);
 
             testCreationProperties(createdFolder);
@@ -221,7 +220,7 @@ public class CmisClientTest {
         client.deleteDocument(documentPath);
 
         // Check total deletion
-        boolean found = _(client.getDocuments()).some(new Lambda1<Boolean, DocumentView>() {
+        boolean found = _(client.getCurrentFolder().getDocuments()).some(new Lambda1<Boolean, DocumentView>() {
             @Override
             public Boolean call(DocumentView o) {
                 return o.getPath().equals(documentPath);
@@ -241,7 +240,7 @@ public class CmisClientTest {
         versionedDocument = client.getDocument(documentPath);
         assertEquals(versionedDocument.getAllVersions().size(), 1);
         assertNotEquals(versionedDocument.getVersionLabel(), latestVersion);
-        found = _(client.getDocuments()).some(new Lambda1<Boolean, DocumentView>() {
+        found = _(client.getCurrentFolder().getDocuments()).some(new Lambda1<Boolean, DocumentView>() {
             @Override
             public Boolean call(DocumentView o) {
                 return o.getPath().equals(documentPath);
@@ -252,12 +251,12 @@ public class CmisClientTest {
 
     @Test
     public void deleteFolder() {
-        FolderView folder = client.getFolders().iterator().next();
+        FolderView folder = client.getCurrentFolder().getFolders().iterator().next();
         final String folderPath = folder.getPath();
         client.deleteFolder(folderPath);
 
         // Check deletion
-        boolean found = _(client.getFolders()).some(new Lambda1<Boolean, FolderView>() {
+        boolean found = _(client.getCurrentFolder().getFolders()).some(new Lambda1<Boolean, FolderView>() {
             @Override
             public Boolean call(FolderView o) {
                 return o.getPath().equals(folderPath);

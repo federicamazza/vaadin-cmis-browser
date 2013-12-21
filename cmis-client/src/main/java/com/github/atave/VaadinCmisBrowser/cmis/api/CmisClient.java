@@ -154,16 +154,24 @@ public abstract class CmisClient {
     }
 
     /**
-     * Returns the path to the current directory.
+     * Returns whether or not this client is already connected to a repository
+     * that supports versionable documents.
      */
-    public String getCurrentPath() {
-        return currentFolder.getPath();
+    public boolean isConnected() {
+        return currentSession != null && currentFolder != null && versionableCmisType != null;
+    }
+
+    /**
+     * Returns the current folder.
+     */
+    public FolderView getCurrentFolder() {
+        return new FolderView(currentFolder);
     }
 
     /**
      * Changes the current working directory.
      *
-     * @param path the path to navigateTo to.
+     * @param path the path to navigate to.
      */
     public void navigateTo(String path) {
         if (path.equals("..") && !currentFolder.isRootFolder()) {
@@ -171,27 +179,6 @@ public abstract class CmisClient {
         } else if (!path.equals(".")) {
             currentFolder = getBareFolder(path);
         }
-    }
-
-    /**
-     * Returns the files in the current directory.
-     */
-    public Collection<FileView> getChildren() {
-        return new FolderView(currentFolder).getChildren();
-    }
-
-    /**
-     * Returns the documents in the current directory.
-     */
-    public Collection<DocumentView> getDocuments() {
-        return new FolderView(currentFolder).getDocuments();
-    }
-
-    /**
-     * Returns the folders in the current directory.
-     */
-    public Collection<FolderView> getFolders() {
-        return new FolderView(currentFolder).getFolders();
     }
 
     /**
@@ -254,18 +241,18 @@ public abstract class CmisClient {
     /**
      * Uploads a document.
      *
-     * @param parentIdOrPath  the id or path of the parent folder
-     * @param fileName        the source file
-     * @param mimeType        the MIME Type of the source file
-     * @param inputStream     the input stream
-     * @param length          the source file length
-     * @param versioningState the versioning state
-     * @param metadata        additional properties for the uploaded files
+     * @param parentIdOrPath       the id or path of the parent folder
+     * @param fileName             the source file
+     * @param mimeType             the MIME Type of the source file
+     * @param inputStream          the input stream
+     * @param length               the source file length
+     * @param versioningState      the versioning state
+     * @param additionalProperties additional properties for the uploaded files
      * @return the uploaded document
      */
     public DocumentView upload(String parentIdOrPath, String fileName, String mimeType,
                                InputStream inputStream, BigInteger length, VersioningState versioningState,
-                               String checkInComment, Map<? extends String, ?> metadata) {
+                               String checkInComment, Map<? extends String, ?> additionalProperties) {
         String cmisType = versionableCmisType;
         Folder parentFolder = getBareFolder(parentIdOrPath);
 
@@ -274,13 +261,13 @@ public abstract class CmisClient {
         }
 
         // Setup basic properties
-        Map<String, Object> properties = new HashMap<String, Object>();
+        Map<String, Object> properties = new HashMap<>();
         properties.put(PropertyIds.OBJECT_TYPE_ID, cmisType);
         properties.put(PropertyIds.NAME, fileName);
 
         // Setup cool properties
-        if (metadata != null) {
-            properties.putAll(metadata);
+        if (additionalProperties != null) {
+            properties.putAll(additionalProperties);
         }
 
         ContentStream contentStream = new ContentStreamImpl(fileName, length, mimeType, inputStream);
@@ -319,10 +306,19 @@ public abstract class CmisClient {
     /**
      * Deletes all versions of a document.
      *
-     * @param documentPath the absolute path of the document
+     * @param documentPath the absolute path of the document to delete
      */
     public void deleteDocument(String documentPath) {
         getBareDocument(documentPath).deleteAllVersions();
+    }
+
+    /**
+     * Deletes all versions of a document.
+     *
+     * @param document the document to delete
+     */
+    public void deleteDocument(DocumentView document) {
+        deleteDocument(document.getId());
     }
 
     /**
@@ -338,7 +334,18 @@ public abstract class CmisClient {
     }
 
     /**
-     * Deletes recursively the specified folder.
+     * Deletes a single version of a document.
+     *
+     * @param document     the document to delete
+     * @param versionLabel the version of the document to delete
+     * @see DocumentView#getVersionLabel()
+     */
+    public void deleteDocument(DocumentView document, String versionLabel) {
+        deleteDocument(document.getId());
+    }
+
+    /**
+     * Recursively delete a folder.
      *
      * @param folderPath path of the folder to delete
      * @return the paths of folder and documents that could not be deleted
@@ -359,14 +366,24 @@ public abstract class CmisClient {
     }
 
     /**
+     * Recursively delete a folder.
+     *
+     * @param folder the folder to delete
+     * @return the paths of folder and documents that could not be deleted
+     */
+    public Collection<String> deleteFolder(FolderView folder) {
+        return deleteFolder(folder.getPath());
+    }
+
+    /**
      * Queries the current CMIS repository.
      *
-     * @param name     a string that has to be contained in the name of the document
-     * @param text     a string that has to be contained in the text of the document
-     * @param metadata a set of additional properties the document must match
+     * @param name       a string that has to be contained in the name of the document
+     * @param text       a string that has to be contained in the text of the document
+     * @param properties a set of additional properties the document must match
      * @return the result of the query as an {@link org.apache.chemistry.opencmis.client.api.ItemIterable}
      */
-    public CmisQueryResult search(String name, String text, Map<String, String> metadata) {
+    public CmisQueryResult search(String name, String text, Map<String, String> properties) {
         StringBuilder queryBuilder = new StringBuilder();
         queryBuilder.append("SELECT ")
                 .append(PropertyIds.OBJECT_ID)
@@ -383,8 +400,8 @@ public abstract class CmisClient {
             whereClauses.add("CONTAINS(" + escape(text) + ")");
         }
 
-        for (String key : metadata.keySet()) {
-            String val = metadata.get(key);
+        for (String key : properties.keySet()) {
+            String val = properties.get(key);
             whereClauses.add(key + " " + val);
         }
 

@@ -2,10 +2,12 @@ package com.github.atave.VaadinCmisBrowser.cmis.impl;
 
 
 import com.github.atave.VaadinCmisBrowser.cmis.api.CmisClient;
+import com.github.atave.VaadinCmisBrowser.cmis.api.RepositoryView;
 import com.github.atave.VaadinCmisBrowser.cmis.api.SessionParametersFactory;
 import org.apache.chemistry.opencmis.commons.SessionParameter;
 import org.apache.chemistry.opencmis.commons.enums.BindingType;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -26,6 +28,12 @@ public abstract class HttpAuthCmisClient extends CmisClient {
         this.user = user;
         this.password = password;
         this.atomPubUrl = atomPubUrl;
+
+        // Smart autoconnect
+        Collection<RepositoryView> repositories = getRepositories();
+        if (repositories.size() == 1) {
+            connect(repositories.iterator().next().getId());
+        }
     }
 
     /**

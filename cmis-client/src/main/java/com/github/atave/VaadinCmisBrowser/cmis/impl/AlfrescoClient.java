@@ -21,9 +21,6 @@ public class AlfrescoClient extends HttpAuthCmisClient {
      */
     public AlfrescoClient(String user, String password, String atomPubUrl) {
         super(user, password, atomPubUrl);
-
-        // Alfresco only supports one repository
-        connect(getRepositories().iterator().next().getId());
     }
 
     /**
