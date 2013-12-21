@@ -127,6 +127,16 @@ public abstract class CmisClient {
         return getBareDocument(getBareDocument(pathOrIdOfObject).checkOut().getId());
     }
 
+    /**
+     * Joins the specified paths.
+     */
+    private String joinPath(String parent, String child) {
+        if (!parent.endsWith("/")) {
+            parent += "/";
+        }
+        return parent + child;
+    }
+
     // API
 
     /**
@@ -177,6 +187,9 @@ public abstract class CmisClient {
         if (path.equals("..") && !currentFolder.isRootFolder()) {
             currentFolder = currentFolder.getFolderParent();
         } else if (!path.equals(".")) {
+            if (!path.startsWith("/")) {
+                path = joinPath(currentFolder.getPath(), path);
+            }
             currentFolder = getBareFolder(path);
         }
     }
@@ -274,11 +287,7 @@ public abstract class CmisClient {
 
         Document document = null;
 
-        String documentPath = parentFolder.getPath();
-        if (!documentPath.endsWith("/")) {
-            documentPath += "/";
-        }
-        documentPath += fileName;
+        String documentPath = joinPath(parentFolder.getPath(), fileName);
 
         try {
             if (exists(documentPath)) {

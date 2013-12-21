@@ -78,7 +78,7 @@ String currentPath = currentFolder.getPath();
 <...> = currentFolder.getFolders();
 
 // Change the current directory
-client.navigateTo("/subdirectory");
+client.navigateTo("subdirectory");
 
 // Back to the parent
 client.navigateTo("..");
