@@ -1,5 +1,6 @@
 package com.github.atave.VaadinCmisBrowser.cmis.api;
 
+import org.apache.chemistry.opencmis.client.api.ItemIterable;
 import org.apache.chemistry.opencmis.client.api.QueryStatement;
 import org.apache.chemistry.opencmis.client.api.Session;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisRuntimeException;
@@ -165,7 +166,7 @@ public class QueryBuilder {
      * @param allVersions whether to query all document versions
      * @return an {@link org.apache.chemistry.opencmis.client.api.ItemIterable} of documents matching the query
      */
-    public QueryResults executeQuery(boolean allVersions) {
+    public ItemIterable<DocumentView> executeQuery(boolean allVersions) {
         String query = getQueryString();
         return new QueryResults(documentFetcher, session.query(query, allVersions));
     }
@@ -175,7 +176,7 @@ public class QueryBuilder {
      *
      * @return an {@link org.apache.chemistry.opencmis.client.api.ItemIterable} of documents matching the query
      */
-    public QueryResults executeQuery() {
+    public ItemIterable<DocumentView> executeQuery() {
         return executeQuery(true);
     }
 }

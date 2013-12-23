@@ -2,6 +2,7 @@ package com.github.atave.VaadinCmisBrowser.cmis.impl;
 
 import com.github.atave.VaadinCmisBrowser.cmis.api.*;
 import com.github.atave.junderscore.Lambda1;
+import org.apache.chemistry.opencmis.client.api.ItemIterable;
 import org.apache.chemistry.opencmis.commons.enums.VersioningState;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
@@ -277,7 +278,7 @@ public class CmisClientTest {
         int numFolders = (int) (Math.pow(folderPerFolder, depth) - 1);
         int generatedDocuments = docsPerFolder * numFolders;
 
-        QueryResults results = client.search(null, "Lorem");
+        ItemIterable<DocumentView> results = client.search(null, "Lorem");
 
         assertEquals(results.getTotalNumItems(), generatedDocuments);
 

@@ -396,7 +396,7 @@ public abstract class CmisClient implements DocumentFetcher {
      * @param properties the additional properties the document must match
      * @return an {@link ItemIterable} of documents matching the query
      */
-    public QueryResults search(String name, String text, Collection<PropertyMatcher> properties) {
+    public ItemIterable<DocumentView> search(String name, String text, Collection<PropertyMatcher> properties) {
         // Build query
         String type = BaseTypeId.CMIS_DOCUMENT.value();
         QueryBuilder queryBuilder = new QueryBuilder(this, currentSession)
@@ -429,7 +429,7 @@ public abstract class CmisClient implements DocumentFetcher {
      * @param text a string that has to be contained in the text of the document
      * @return an {@link ItemIterable} of documents matching the query
      */
-    public QueryResults search(String name, String text) {
+    public ItemIterable<DocumentView> search(String name, String text) {
         return search(name, text, null);
     }
 
