@@ -277,7 +277,7 @@ public class CmisClientTest {
         int numFolders = (int) (Math.pow(folderPerFolder, depth) - 1);
         int generatedDocuments = docsPerFolder * numFolders;
 
-        CmisQueryResult results = client.search(null, "Lorem");
+        QueryResults results = client.search(null, "Lorem");
 
         assertEquals(results.getTotalNumItems(), generatedDocuments);
 

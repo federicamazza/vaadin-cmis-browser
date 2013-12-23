@@ -12,12 +12,12 @@ import java.util.NoSuchElementException;
  * A wrapper for an {@link org.apache.chemistry.opencmis.client.api.ItemIterable}
  * of {@link org.apache.chemistry.opencmis.client.api.QueryResult}s.
  */
-public class CmisQueryResult implements ItemIterable<DocumentView> {
+public class QueryResults implements ItemIterable<DocumentView> {
 
     private final CmisClient client;
     private final ItemIterable<QueryResult> delegate;
 
-    CmisQueryResult(CmisClient client, ItemIterable<QueryResult> delegate) {
+    QueryResults(CmisClient client, ItemIterable<QueryResult> delegate) {
         this.client = client;
         this.delegate = delegate;
     }
@@ -31,7 +31,7 @@ public class CmisQueryResult implements ItemIterable<DocumentView> {
      */
     @Override
     public ItemIterable<DocumentView> skipTo(long position) {
-        return new CmisQueryResult(client, delegate.skipTo(position));
+        return new QueryResults(client, delegate.skipTo(position));
     }
 
     /**
@@ -42,7 +42,7 @@ public class CmisQueryResult implements ItemIterable<DocumentView> {
      */
     @Override
     public ItemIterable<DocumentView> getPage() {
-        return new CmisQueryResult(client, delegate.getPage());
+        return new QueryResults(client, delegate.getPage());
     }
 
     /**
@@ -53,7 +53,7 @@ public class CmisQueryResult implements ItemIterable<DocumentView> {
      */
     @Override
     public ItemIterable<DocumentView> getPage(int maxNumItems) {
-        return new CmisQueryResult(client, delegate.getPage(maxNumItems));
+        return new QueryResults(client, delegate.getPage(maxNumItems));
     }
 
     /**

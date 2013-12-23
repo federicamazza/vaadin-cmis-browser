@@ -165,9 +165,9 @@ public class QueryBuilder {
      * @param allVersions whether to query all document versions
      * @return an {@link org.apache.chemistry.opencmis.client.api.ItemIterable} of documents matching the query
      */
-    public CmisQueryResult executeQuery(boolean allVersions) {
+    public QueryResults executeQuery(boolean allVersions) {
         String query = getQueryString();
-        return new CmisQueryResult(client, session.query(query, allVersions));
+        return new QueryResults(client, session.query(query, allVersions));
     }
 
     /**
@@ -175,7 +175,7 @@ public class QueryBuilder {
      *
      * @return an {@link org.apache.chemistry.opencmis.client.api.ItemIterable} of documents matching the query
      */
-    public CmisQueryResult executeQuery() {
+    public QueryResults executeQuery() {
         return executeQuery(true);
     }
 }
