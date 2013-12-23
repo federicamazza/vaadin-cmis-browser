@@ -404,10 +404,8 @@ public abstract class CmisClient implements DocumentFetcher {
                 .from(BaseTypeId.CMIS_DOCUMENT.value());
 
         if (name != null) {
-            queryBuilder = queryBuilder.where(
-                    new PropertyMatcher(type, PropertyIds.NAME,
-                            QueryOperator.LIKE, PropertyType.STRING, name)
-            );
+            queryBuilder = queryBuilder.where(new PropertyMatcher(PropertyIds.NAME,
+                    QueryOperator.LIKE, PropertyType.STRING, name));
         }
 
         if (text != null) {

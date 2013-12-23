@@ -2,6 +2,7 @@ package com.github.atave.VaadinCmisBrowser.cmis.api;
 
 
 import org.apache.chemistry.opencmis.client.api.Session;
+import org.apache.chemistry.opencmis.commons.enums.BaseTypeId;
 
 /**
  * A bundle of information used to build WHERE clauses in queries.
@@ -31,6 +32,18 @@ public class PropertyMatcher {
         this.valueType = valueType;
         this.values = values;
         this.propertyType = propertyType;
+    }
+
+    /**
+     * Creates a new bundle for matching documents.
+     *
+     * @param property  the name of the property
+     * @param operator  an operator supported by the type of the property
+     * @param valueType the type of the property
+     * @param values    the value(s) of the property
+     */
+    public PropertyMatcher(String property, QueryOperator operator, PropertyType valueType, Object... values) {
+        this(BaseTypeId.CMIS_DOCUMENT.value(), property, operator, valueType, values);
     }
 
     /**
