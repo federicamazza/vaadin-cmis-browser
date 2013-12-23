@@ -162,7 +162,7 @@ client.deleteDocument(document, versionToDelete);
 
 ### Document search
 ```java
-String name = "fileName.txt"
+String name = "fileName.txt";
 String text = "Lorem ipsum";
 
 // Search all versions of all documents
