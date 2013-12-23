@@ -47,8 +47,8 @@ public enum PropertyType {
      * Returns whether the specified operator is supported.
      */
     public boolean supports(QueryOperator operator) {
-        for(QueryOperator queryOperator : supportedOperators) {
-            if(queryOperator == operator) {
+        for (QueryOperator queryOperator : supportedOperators) {
+            if (queryOperator == operator) {
                 return true;
             }
         }
@@ -61,7 +61,7 @@ public enum PropertyType {
     String format(String fragment, Object[] values, Session session) {
         QueryStatement stmt = session.createQueryStatement(fragment);
 
-        switch(this) {
+        switch (this) {
             case STRING:
             case URI:
             case ID:
@@ -71,7 +71,7 @@ public enum PropertyType {
             case STRING_SET:
             case URI_SET:
             case ID_SET:
-                for(int i = 1; i < values.length; ++i) {
+                for (int i = 1; i < values.length; ++i) {
                     stmt.setString(i, (String[]) values[i]);
                 }
                 break;
@@ -81,7 +81,7 @@ public enum PropertyType {
                 break;
 
             case NUMBER_SET:
-                for(int i = 1; i < values.length; ++i) {
+                for (int i = 1; i < values.length; ++i) {
                     stmt.setNumber(i, (Number[]) values[i]);
                 }
                 break;
@@ -95,7 +95,7 @@ public enum PropertyType {
                 break;
 
             case DATETIME_SET:
-                for(int i = 1; i < values.length; ++i) {
+                for (int i = 1; i < values.length; ++i) {
                     stmt.setDateTime(i, (Date[]) values[i]);
                 }
                 break;

@@ -68,7 +68,7 @@ public abstract class HttpAuthCmisClient extends CmisClient {
     private class HttpAuthSessionParametersFactory extends SessionParametersFactory {
         @Override
         public Map<String, String> newInstance() {
-            Map<String, String> parameters = new HashMap<String, String>();
+            Map<String, String> parameters = new HashMap<>();
 
             // Credentials
             parameters.put(SessionParameter.USER, user);

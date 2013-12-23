@@ -38,7 +38,7 @@ public class QueryBuilder {
      * Adds a SELECT clause. <br></br>
      * Additionally, it adds the related FROM clause if necessary.
      *
-     * @param type the type of the property
+     * @param type     the type of the property
      * @param property the name of the property
      * @return a {@code QueryBuilder} object
      */
@@ -80,8 +80,8 @@ public class QueryBuilder {
     public QueryBuilder where(Iterable<PropertyMatcher> propertyMatchers) {
         QueryBuilder queryBuilder = this;
 
-        if(propertyMatchers != null) {
-            for(PropertyMatcher propertyMatcher : propertyMatchers) {
+        if (propertyMatchers != null) {
+            for (PropertyMatcher propertyMatcher : propertyMatchers) {
                 queryBuilder = where(propertyMatcher);
             }
         }
@@ -102,7 +102,7 @@ public class QueryBuilder {
     /**
      * Adds an ORDER BY clause.
      *
-     * @param type the type of the property
+     * @param type     the type of the property
      * @param property the name of the property
      * @return a {@code QueryBuilder} object
      */
@@ -115,9 +115,9 @@ public class QueryBuilder {
 
     private void concatenate(StringBuilder sb, Set<String> strings, String separator) {
         int i = strings.size();
-        for(String selectFragment : strings) {
+        for (String selectFragment : strings) {
             sb.append(" ").append(selectFragment);
-            if(--i > 0) {
+            if (--i > 0) {
                 sb.append(separator);
             }
         }
@@ -130,25 +130,25 @@ public class QueryBuilder {
         StringBuilder sb = new StringBuilder("SELECT");
 
         // SELECT
-        if(selectFragments.isEmpty()) {
+        if (selectFragments.isEmpty()) {
             sb.append(" *");
         } else {
             concatenate(sb, selectFragments, ",");
         }
 
         // FROM
-        if(!fromFragments.isEmpty()) {
+        if (!fromFragments.isEmpty()) {
             sb.append(" FROM");
             concatenate(sb, fromFragments, ",");
 
             // WHERE
-            if(!whereFragments.isEmpty()) {
+            if (!whereFragments.isEmpty()) {
                 sb.append(" WHERE");
                 concatenate(sb, whereFragments, " AND");
             }
 
             // ORDER BY
-            if(!orderByFragments.isEmpty()) {
+            if (!orderByFragments.isEmpty()) {
                 sb.append(" ORDER BY");
                 concatenate(sb, orderByFragments, ",");
             }

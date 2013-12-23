@@ -46,7 +46,7 @@ public class _Collection<T> implements Collection<T> {
     }
 
     public _Collection<T> filter(final Lambda1<Boolean, T> lambdaFunction) {
-        return new _Collection<T>(new _filter<T>() {
+        return new _Collection<>(new _filter<T>() {
             @Override
             protected boolean test(T object) {
                 return lambdaFunction.call(object);
@@ -86,7 +86,7 @@ public class _Collection<T> implements Collection<T> {
     }
 
     public <R> _Collection<R> map(final Lambda1<R, T> lambdaFunction) {
-        return new _Collection<R>(new _map<R, T>() {
+        return new _Collection<>(new _map<R, T>() {
             @Override
             protected R process(T object) {
                 return lambdaFunction.call((object));
@@ -121,7 +121,7 @@ public class _Collection<T> implements Collection<T> {
     }
 
     public _Collection<T> reject(final Lambda1<Boolean, T> lambdaFunction) {
-        return new _Collection<T>(new _reject<T>() {
+        return new _Collection<>(new _reject<T>() {
             @Override
             protected boolean test(T object) {
                 return lambdaFunction.call(object);
@@ -130,11 +130,11 @@ public class _Collection<T> implements Collection<T> {
     }
 
     public _Collection<T> sample(int n) {
-        return new _Collection<T>(_sample.on(delegate, n));
+        return new _Collection<>(_sample.on(delegate, n));
     }
 
     public _Collection<T> shuffle() {
-        return new _Collection<T>(_shuffle.on(delegate));
+        return new _Collection<>(_shuffle.on(delegate));
     }
 
     public boolean some(final Lambda1<Boolean, T> lambdaFunction) {
@@ -147,7 +147,7 @@ public class _Collection<T> implements Collection<T> {
     }
 
     public <R extends Comparable<R>> _Collection<R> sortBy(final Lambda1<R, T> lambdaFunction) {
-        return new _Collection<R>(new _sortBy<R, T>() {
+        return new _Collection<>(new _sortBy<R, T>() {
             @Override
             protected R process(T object) {
                 return lambdaFunction.call(object);

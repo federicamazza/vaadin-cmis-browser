@@ -17,7 +17,10 @@ import org.apache.chemistry.opencmis.commons.impl.dataobjects.ContentStreamImpl;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigInteger;
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -350,7 +353,7 @@ public abstract class CmisClient {
      * @see DocumentView#getVersionLabel()
      */
     public void deleteDocument(DocumentView document, String versionLabel) {
-        deleteDocument(document.getId());
+        deleteDocument(document.getId(), versionLabel);
     }
 
     /**
@@ -399,18 +402,18 @@ public abstract class CmisClient {
                 .select(type, PropertyIds.OBJECT_ID)
                 .from(BaseTypeId.CMIS_DOCUMENT.value());
 
-        if(name != null) {
+        if (name != null) {
             queryBuilder = queryBuilder.where(
                     new PropertyMatcher(type, PropertyIds.NAME,
                             QueryOperator.LIKE, PropertyType.STRING, name)
             );
         }
 
-        if(text != null) {
+        if (text != null) {
             queryBuilder = queryBuilder.whereContains(text);
         }
 
-        if(properties != null) {
+        if (properties != null) {
             queryBuilder = queryBuilder.where(properties);
         }
 

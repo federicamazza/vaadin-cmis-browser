@@ -14,7 +14,7 @@ public abstract class _countBy<K, T> {
     protected abstract K process(T object);
 
     public Map<K, Integer> on(Iterable<T> iterable) {
-        Map<K, Integer> map = new HashMap<K, Integer>();
+        Map<K, Integer> map = new HashMap<>();
 
         for (T o : iterable) {
             K key = process(o);

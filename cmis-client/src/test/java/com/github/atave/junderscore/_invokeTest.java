@@ -11,10 +11,7 @@ public class _invokeTest extends BaseTest<String> {
 
         try {
             _invoke.on(getSource(), "length");
-        } catch (InvocationTargetException e) {
-            e.printStackTrace();
-            fail();
-        } catch (IllegalAccessException e) {
+        } catch (InvocationTargetException | IllegalAccessException e) {
             e.printStackTrace();
             fail();
         }

@@ -13,7 +13,7 @@ public abstract class _filter<T> {
     protected abstract boolean test(T object);
 
     public Collection<T> on(Iterable<T> iterable) {
-        Collection<T> retval = new ArrayList<T>();
+        Collection<T> retval = new ArrayList<>();
         for (T o : iterable) {
             if (test(o)) {
                 retval.add(o);

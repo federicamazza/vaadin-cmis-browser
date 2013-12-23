@@ -20,10 +20,10 @@ public class PropertyMatcher {
      * Creates a new bundle.
      *
      * @param propertyType the type of the property
-     * @param property the name of the property
-     * @param operator an operator supported by the type of the property
-     * @param valueType the type of the property
-     * @param values the value(s) of the property
+     * @param property     the name of the property
+     * @param operator     an operator supported by the type of the property
+     * @param valueType    the type of the property
+     * @param values       the value(s) of the property
      */
     public PropertyMatcher(String propertyType, String property, QueryOperator operator, PropertyType valueType, Object... values) {
         this.property = property;

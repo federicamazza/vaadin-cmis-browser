@@ -14,7 +14,7 @@ public abstract class _map<R, T> {
     protected abstract R process(T object);
 
     public Collection<R> on(Iterable<T> iterable) {
-        Collection<R> retval = new ArrayList<R>();
+        Collection<R> retval = new ArrayList<>();
         for (T o : iterable) {
             retval.add(process(o));
         }

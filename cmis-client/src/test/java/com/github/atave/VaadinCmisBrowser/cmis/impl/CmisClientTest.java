@@ -38,18 +38,18 @@ public class CmisClientTest {
 
     // Server properties
     protected static final String REPO_ID = cat(SERVER_PREFIX, "RepositoryId");
-    protected static final String USER = cat(SERVER_PREFIX, "User");
-    protected static final String PASSWORD = cat(SERVER_PREFIX, "Password");
+    private static final String USER = cat(SERVER_PREFIX, "User");
+    private static final String PASSWORD = cat(SERVER_PREFIX, "Password");
 
     // Repository filler properties
-    protected static final String DOCS_PER_FOLDER = cat(FILLER_PREFIX, "DocsPerFolder");
-    protected static final String FOLDER_PER_FOLDER = cat(FILLER_PREFIX, "FolderPerFolder");
-    protected static final String DEPTH = cat(FILLER_PREFIX, "Depth");
+    private static final String DOCS_PER_FOLDER = cat(FILLER_PREFIX, "DocsPerFolder");
+    private static final String FOLDER_PER_FOLDER = cat(FILLER_PREFIX, "FolderPerFolder");
+    private static final String DEPTH = cat(FILLER_PREFIX, "Depth");
     protected static final String CONTENT_SIZE_IN_KB = cat(FILLER_PREFIX, "ContentSizeInKB");
 
     // Variables
     private Server server;
-    protected CmisClient client;
+    private CmisClient client;
 
     @Before
     public void setUp() throws Exception {
@@ -284,7 +284,7 @@ public class CmisClientTest {
         // Search versioned documents
         String fileName = "FIND_ME.txt";
         String[] contents = {"ax", "by", "x'y"};
-        DocumentView versionedDocument = createVersionedDocument(fileName, contents);
+        createVersionedDocument(fileName, contents);
 
         results = client.search(fileName, "a");
         assertEquals(results.getTotalNumItems(), 1);

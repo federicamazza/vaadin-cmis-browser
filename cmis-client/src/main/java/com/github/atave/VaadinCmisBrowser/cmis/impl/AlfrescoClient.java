@@ -10,7 +10,7 @@ import org.apache.chemistry.opencmis.client.runtime.SessionFactoryImpl;
  */
 public class AlfrescoClient extends HttpAuthCmisClient {
 
-    public static final String ATOMPUB_URL = "alfresco.cmis.atompub.url";
+    private static final String ATOMPUB_URL = "alfresco.cmis.atompub.url";
 
     /**
      * Creates a new {@code AlfrescoClient}.

@@ -27,11 +27,11 @@ public enum QueryOperator {
     }
 
     private String getTemplate() {
-        if(this == CONTAINS) {
+        if (this == CONTAINS) {
             return value + "(?)";
         } else if (this == ANY_IN) {
             return "ANY ? IN (?)";
-        } else if(this == IN || this == NOT_IN) {
+        } else if (this == IN || this == NOT_IN) {
             return "? " + value + " (?)";
         } else {
             return "? " + value + " ?";
@@ -53,14 +53,14 @@ public enum QueryOperator {
     String getFragment(PropertyMatcher matcher, Session session) {
         QueryStatement stmt = session.createQueryStatement(getTemplate());
 
-        if(this == CONTAINS) {
+        if (this == CONTAINS) {
             // Obvious
             stmt.setStringContains(1, (String) matcher.getValues()[0]);
             return stmt.toQueryString();
         } else {
             stmt.setProperty(1, matcher.getPropertyType(), matcher.getProperty());
 
-            if(this == LIKE || this == NOT_LIKE) {
+            if (this == LIKE || this == NOT_LIKE) {
                 // Also obvious
                 stmt.setStringLike(2, (String) matcher.getValues()[0]);
                 return stmt.toQueryString();
