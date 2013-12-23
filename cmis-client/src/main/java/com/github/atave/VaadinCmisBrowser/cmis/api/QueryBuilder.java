@@ -12,7 +12,7 @@ import java.util.Set;
  */
 public class QueryBuilder {
 
-    private final CmisClient client;
+    private final DocumentFetcher documentFetcher;
     private final Session session;
 
     private final Set<String> selectFragments = new HashSet<>();
@@ -25,8 +25,8 @@ public class QueryBuilder {
      *
      * @param session the session to use
      */
-    QueryBuilder(CmisClient client, Session session) {
-        this.client = client;
+    public QueryBuilder(DocumentFetcher documentFetcher, Session session) {
+        this.documentFetcher = documentFetcher;
         this.session = session;
     }
 
@@ -167,7 +167,7 @@ public class QueryBuilder {
      */
     public QueryResults executeQuery(boolean allVersions) {
         String query = getQueryString();
-        return new QueryResults(client, session.query(query, allVersions));
+        return new QueryResults(documentFetcher, session.query(query, allVersions));
     }
 
     /**

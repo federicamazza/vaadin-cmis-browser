@@ -14,11 +14,11 @@ import java.util.NoSuchElementException;
  */
 public class QueryResults implements ItemIterable<DocumentView> {
 
-    private final CmisClient client;
+    private final DocumentFetcher documentFetcher;
     private final ItemIterable<QueryResult> delegate;
 
-    QueryResults(CmisClient client, ItemIterable<QueryResult> delegate) {
-        this.client = client;
+    QueryResults(DocumentFetcher documentFetcher, ItemIterable<QueryResult> delegate) {
+        this.documentFetcher = documentFetcher;
         this.delegate = delegate;
     }
 
@@ -31,7 +31,7 @@ public class QueryResults implements ItemIterable<DocumentView> {
      */
     @Override
     public ItemIterable<DocumentView> skipTo(long position) {
-        return new QueryResults(client, delegate.skipTo(position));
+        return new QueryResults(documentFetcher, delegate.skipTo(position));
     }
 
     /**
@@ -42,7 +42,7 @@ public class QueryResults implements ItemIterable<DocumentView> {
      */
     @Override
     public ItemIterable<DocumentView> getPage() {
-        return new QueryResults(client, delegate.getPage());
+        return new QueryResults(documentFetcher, delegate.getPage());
     }
 
     /**
@@ -53,7 +53,7 @@ public class QueryResults implements ItemIterable<DocumentView> {
      */
     @Override
     public ItemIterable<DocumentView> getPage(int maxNumItems) {
-        return new QueryResults(client, delegate.getPage(maxNumItems));
+        return new QueryResults(documentFetcher, delegate.getPage(maxNumItems));
     }
 
     /**
@@ -90,7 +90,7 @@ public class QueryResults implements ItemIterable<DocumentView> {
         public DocumentView next() {
             QueryResult queryResult = delegate.next();
             String objectId = (String) queryResult.getPropertyByQueryName(PropertyIds.OBJECT_ID).getFirstValue();
-            return client.getDocument(objectId);
+            return documentFetcher.getDocument(objectId);
         }
 
         /**

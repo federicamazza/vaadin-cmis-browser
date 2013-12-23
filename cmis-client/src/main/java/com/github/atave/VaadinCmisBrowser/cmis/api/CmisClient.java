@@ -26,7 +26,7 @@ import java.util.Map;
 /**
  * A simple CMIS client.
  */
-public abstract class CmisClient {
+public abstract class CmisClient implements DocumentFetcher {
 
     // CmisClient state
     private Session currentSession;
@@ -76,19 +76,19 @@ public abstract class CmisClient {
     /**
      * Gets an object by path or object id.
      *
-     * @param pathOrIdOfObject the path or object id
+     * @param pathOrId the path or id of the object
      * @return the object
      */
-    private CmisObject getObject(String pathOrIdOfObject) {
-        return FileUtils.getObject(pathOrIdOfObject, currentSession);
+    private CmisObject getObject(String pathOrId) {
+        return FileUtils.getObject(pathOrId, currentSession);
     }
 
     /**
      * Determines an object existence.
      */
-    private boolean exists(String pathOrIdOfObject) {
+    private boolean exists(String pathOrId) {
         try {
-            getObject(pathOrIdOfObject);
+            getObject(pathOrId);
             return true;
         } catch (RuntimeException e) {
             return false;
@@ -98,24 +98,24 @@ public abstract class CmisClient {
     /**
      * Gets a folder by path or object id.
      *
-     * @param pathOrIdOfObject the path or folder id
+     * @param pathOrId the path or id of the folder
      * @return the folder object
      */
-    private Folder getBareFolder(String pathOrIdOfObject) {
-        return FileUtils.getFolder(pathOrIdOfObject, currentSession);
+    private Folder getBareFolder(String pathOrId) {
+        return FileUtils.getFolder(pathOrId, currentSession);
     }
 
     /**
      * Gets a document by path or object id.
      *
-     * @param pathOrIdOfObject the path or document id
+     * @param pathOrId the path or id of the document
      * @return the document object
      */
-    private Document getBareDocument(String pathOrIdOfObject) {
+    private Document getBareDocument(String pathOrId) {
         Document document;
 
         try {
-            document = (Document) getObject(pathOrIdOfObject);
+            document = (Document) getObject(pathOrId);
         } catch (ClassCastException cce) {
             throw new IllegalArgumentException("Object is not a document!");
         }
@@ -126,8 +126,8 @@ public abstract class CmisClient {
     /**
      * Returns a PWC of the specified document.
      */
-    private Document checkout(String pathOrIdOfObject) {
-        return getBareDocument(getBareDocument(pathOrIdOfObject).checkOut().getId());
+    private Document checkout(String pathOrId) {
+        return getBareDocument(getBareDocument(pathOrId).checkOut().getId());
     }
 
     /**
@@ -212,24 +212,25 @@ public abstract class CmisClient {
     }
 
     /**
-     * Returns the file at the specified {@code path}.
+     * Returns the file at the specified {@code path} or with the specified {@code objectId}.
      */
-    public FileView getFile(String path) {
-        return new FileView((FileableCmisObject) getObject(path));
+    public FileView getFile(String pathOrId) {
+        return new FileView((FileableCmisObject) getObject(pathOrId));
     }
 
     /**
-     * Returns the file at the specified {@code path}.
+     * Returns the document at the specified {@code path} or with the specified {@code objectId}.
      */
-    public DocumentView getDocument(String path) {
-        return new DocumentView(getBareDocument(path));
+    @Override
+    public DocumentView getDocument(String pathOrId) {
+        return new DocumentView(getBareDocument(pathOrId));
     }
 
     /**
-     * Returns the file at the specified {@code path}.
+     * Returns the folder at the specified {@code path}.
      */
-    public FolderView getFolder(String path) {
-        return new FolderView(getBareFolder(path));
+    public FolderView getFolder(String pathOrId) {
+        return new FolderView(getBareFolder(pathOrId));
     }
 
     /**
