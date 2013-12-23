@@ -200,22 +200,25 @@ public class CmisClientTest {
         checkContents(uploadedDocument, content);
     }
 
-    private DocumentView createVersionedDocument() {
-        String fileName = "DELETE_ME.txt";
-        String content = "useless content";
-        DocumentView document = client.upload("/", fileName, null, asInputStream(content),
-                BigInteger.valueOf(content.length()), VersioningState.MAJOR,
-                null, null);
-        content = "more useless content";
-        return client.upload("/", fileName, null, asInputStream(content),
-                BigInteger.valueOf(content.length()), VersioningState.MINOR,
-                null, null);
+    private DocumentView createVersionedDocument(String fileName, String[] contents) {
+        DocumentView document = null;
+
+        for (String content : contents) {
+            document = client.upload("/", fileName, null, asInputStream(content),
+                    BigInteger.valueOf(content.length()), VersioningState.MAJOR,
+                    null, null);
+        }
+
+        return document;
     }
 
     @Test
     public void deleteDocument() {
+        String fileName = "DELETE_ME.txt";
+        String[] contents = {"useless content", "more useless content"};
+
         // Delete all versions of a document
-        DocumentView versionedDocument = createVersionedDocument();
+        DocumentView versionedDocument = createVersionedDocument(fileName, contents);
         final String documentPath = versionedDocument.getPath();
         client.deleteDocument(documentPath);
 
@@ -229,7 +232,7 @@ public class CmisClientTest {
         assertFalse(found);
 
         // Delete only a version of a document
-        versionedDocument = createVersionedDocument();
+        versionedDocument = createVersionedDocument(fileName, contents);
         if (!versionedDocument.isLatestVersion()) {
             versionedDocument = versionedDocument.getObjectOfLatestVersion(false);
         }
@@ -267,7 +270,38 @@ public class CmisClientTest {
 
     @Test
     public void search() {
-        // TODO
-        fail();
+        // Search generated documents
+        int docsPerFolder = Integer.parseInt(Config.get(DOCS_PER_FOLDER));
+        int depth = Integer.parseInt(Config.get(DEPTH));
+        int folderPerFolder = Integer.parseInt(Config.get(FOLDER_PER_FOLDER));
+        int numFolders = (int) (Math.pow(folderPerFolder, depth) - 1);
+        int generatedDocuments = docsPerFolder * numFolders;
+
+        CmisQueryResult results = client.search(null, "Lorem");
+
+        assertEquals(results.getTotalNumItems(), generatedDocuments);
+
+        // Search versioned documents
+        String fileName = "FIND_ME.txt";
+        String[] contents = {"ax", "by", "x'y"};
+        DocumentView versionedDocument = createVersionedDocument(fileName, contents);
+
+        results = client.search(fileName, "a");
+        assertEquals(results.getTotalNumItems(), 1);
+        assertEquals(contents[0], asString(results.iterator().next().download()));
+
+        results = client.search(fileName, "b");
+        assertEquals(results.getTotalNumItems(), 1);
+        assertEquals(contents[1], asString(results.iterator().next().download()));
+
+        results = client.search(fileName, "x");
+        assertEquals(results.getTotalNumItems(), 2);
+
+        results = client.search(fileName, "y");
+        assertEquals(results.getTotalNumItems(), 2);
+
+        results = client.search(fileName, "'");
+        assertEquals(results.getTotalNumItems(), 1);
+        assertEquals(contents[2], asString(results.iterator().next().download()));
     }
 }

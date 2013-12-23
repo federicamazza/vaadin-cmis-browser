@@ -385,53 +385,55 @@ public abstract class CmisClient {
     }
 
     /**
-     * Queries the current CMIS repository.
+     * Searches all versions of every document in the current CMIS repository.
      *
      * @param name       a string that has to be contained in the name of the document
      * @param text       a string that has to be contained in the text of the document
-     * @param properties a set of additional properties the document must match
-     * @return the result of the query as an {@link org.apache.chemistry.opencmis.client.api.ItemIterable}
+     * @param properties the additional properties the document must match
+     * @return an {@link ItemIterable} of documents matching the query
      */
-    public CmisQueryResult search(String name, String text, Map<String, String> properties) {
-        StringBuilder queryBuilder = new StringBuilder();
-        queryBuilder.append("SELECT ")
-                .append(PropertyIds.OBJECT_ID)
-                .append(" FROM ")
-                .append(BaseTypeId.CMIS_DOCUMENT.value());
+    public CmisQueryResult search(String name, String text, Collection<PropertyMatcher> properties) {
+        // Build query
+        String type = BaseTypeId.CMIS_DOCUMENT.value();
+        QueryBuilder queryBuilder = new QueryBuilder(this, currentSession)
+                .select(type, PropertyIds.OBJECT_ID)
+                .from(BaseTypeId.CMIS_DOCUMENT.value());
 
-        List<String> whereClauses = new ArrayList<String>();
-
-        if (name != null && !name.equals("")) {
-            whereClauses.add(PropertyIds.NAME + " LIKE " + escape(name));
+        if(name != null) {
+            queryBuilder = queryBuilder.where(
+                    new PropertyMatcher(type, PropertyIds.NAME,
+                            QueryOperator.LIKE, PropertyType.STRING, name)
+            );
         }
 
-        if (text != null && !text.equals("")) {
-            whereClauses.add("CONTAINS(" + escape(text) + ")");
+        if(text != null) {
+            queryBuilder = queryBuilder.whereContains(text);
         }
 
-        for (String key : properties.keySet()) {
-            String val = properties.get(key);
-            whereClauses.add(key + " " + val);
+        if(properties != null) {
+            queryBuilder = queryBuilder.where(properties);
         }
 
-        if (!whereClauses.isEmpty()) {
-            queryBuilder.append(" WHERE");
-
-            for (int i = 0; i < whereClauses.size(); ++i) {
-                if (i != 0) {
-                    queryBuilder.append(" AND ");
-                }
-                queryBuilder.append(whereClauses.get(i));
-            }
-        }
-
-        String query = queryBuilder.toString();
-        return new CmisQueryResult(this, currentSession.query(query, true));
+        // Execute query
+        return queryBuilder.executeQuery(true);
     }
 
-    static String escape(String input) {
-        input = input.replaceAll("'", "\\'");
-        return "'" + input + "'";
+    /**
+     * Searches all versions of every document in the current CMIS repository.
+     *
+     * @param name a string that has to be contained in the name of the document
+     * @param text a string that has to be contained in the text of the document
+     * @return an {@link ItemIterable} of documents matching the query
+     */
+    public CmisQueryResult search(String name, String text) {
+        return search(name, text, null);
     }
 
+    /**
+     * Returns a {@link com.github.atave.VaadinCmisBrowser.cmis.api.QueryBuilder}
+     * to interactively build queries.
+     */
+    public QueryBuilder getQueryBuilder() {
+        return new QueryBuilder(this, currentSession);
+    }
 }

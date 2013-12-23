@@ -17,7 +17,7 @@ public class CmisQueryResult implements ItemIterable<DocumentView> {
     private final CmisClient client;
     private final ItemIterable<QueryResult> delegate;
 
-    public CmisQueryResult(CmisClient client, ItemIterable<QueryResult> delegate) {
+    CmisQueryResult(CmisClient client, ItemIterable<QueryResult> delegate) {
         this.client = client;
         this.delegate = delegate;
     }
