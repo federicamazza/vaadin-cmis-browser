@@ -133,7 +133,7 @@ receiver.setProperty("my:property2", "value2");
 DocumentView document = client.getDocument("/path/to/document");
 
 // Make sure it's the correct version
-String requestedVersion = <...>
+String requestedVersion = <...>;
 document = document.getObjectOfVersion(requestedVersion);
 
 // Create a stream resource
@@ -153,7 +153,7 @@ client.deleteDocument("/path/of/document/to/nuke");
 client.deleteDocument(document);
 
 // Delete a single version of a document
-String versionToDelete = <...>
+String versionToDelete = <...>;
 client.deleteDocument("/path/to/document", versionToDelete);
 
 // Also
@@ -161,7 +161,34 @@ client.deleteDocument(document, versionToDelete);
 ```
 
 ### Document search
-*Work in progress*
+```java
+String name = "fileName.txt"
+String text = "Lorem ipsum";
+
+// Search all versions of all documents
+ItemIterable<DocumentView> results = client.search(name, text);
+
+for(DocumentView document : results) {
+    // do something with the document
+}
+
+// Repeat the search, but ignore the name
+results = client.search(null, text);
+
+// This time, ignore the text
+results = client.search(name, null);
+
+// Let's specify additional properties the documents must match:
+// 1. it must have been created by 'creative_user'
+// 2. it must have been modified by 'disruptive_user'
+// 3. it must have been modified before Christmas Day
+Collection<PropertyMatcher> matchers = new ArrayList<>();
+matchers.add(new PropertyMatcher("cmis:createdBy", QueryOperator.EQUALS, PropertyType.STRING, "creative_user"));
+matchers.add(new PropertyMatcher("cmis:lastModifiedBy", QueryOperator.EQUALS, PropertyType.STRING, "disruptive_user"));
+matchers.add(new PropertyMatcher("cmis:lastModificationDate", QueryOperator.LESS_THAN, PropertyType.DATETIME, new Date(2013, 12, 25)));
+
+results = client.search(name, text, matchers);
+```
 
 
 ## Notes
