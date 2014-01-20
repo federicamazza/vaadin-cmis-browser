@@ -6,8 +6,10 @@ import org.apache.chemistry.opencmis.client.util.FileUtils;
 import org.apache.chemistry.opencmis.commons.PropertyIds;
 import org.apache.chemistry.opencmis.commons.data.ContentStream;
 import org.apache.chemistry.opencmis.commons.enums.BaseTypeId;
+import org.apache.chemistry.opencmis.commons.enums.ContentStreamAllowed;
 import org.apache.chemistry.opencmis.commons.enums.UnfileObject;
 import org.apache.chemistry.opencmis.commons.enums.VersioningState;
+import org.apache.chemistry.opencmis.commons.exceptions.CmisBaseException;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisRuntimeException;
 import org.apache.chemistry.opencmis.commons.impl.MimeTypes;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.ContentStreamImpl;
@@ -15,17 +17,21 @@ import org.apache.chemistry.opencmis.commons.impl.dataobjects.ContentStreamImpl;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigInteger;
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 
 /**
  * A simple CMIS client.
  */
-public abstract class CmisClient {
+public abstract class CmisClient implements DocumentFetcher {
 
     // CmisClient state
     private Session currentSession;
     private Folder currentFolder;
+    private String versionableCmisType;
 
     // Helpers
 
@@ -40,21 +46,49 @@ public abstract class CmisClient {
     protected abstract SessionParametersFactory getSessionParametersFactory();
 
     /**
+     * Returns the versionable cmis type for the current session, since cmis:document
+     * is actually not versionable.
+     */
+    private String getVersionableCmisType() {
+        return getVersionableCmisType(currentSession.getTypeDescendants(null, -1, true));
+    }
+
+    private String getVersionableCmisType(List<Tree<ObjectType>> trees) {
+        for (Tree<ObjectType> tree : trees) {
+            ObjectType objectType = tree.getItem();
+            if (objectType instanceof DocumentType) {
+                DocumentType documentType = (DocumentType) objectType;
+                if (documentType.getContentStreamAllowed() == ContentStreamAllowed.ALLOWED
+                        && documentType.isVersionable()) {
+                    return documentType.getId();
+                }
+            }
+
+            String versionableCmisType = getVersionableCmisType(tree.getChildren());
+            if (versionableCmisType != null) {
+                return versionableCmisType;
+            }
+        }
+
+        return null;
+    }
+
+    /**
      * Gets an object by path or object id.
      *
-     * @param pathOrIdOfObject the path or object id
+     * @param pathOrId the path or id of the object
      * @return the object
      */
-    private CmisObject getObject(String pathOrIdOfObject) {
-        return FileUtils.getObject(pathOrIdOfObject, currentSession);
+    private CmisObject getObject(String pathOrId) {
+        return FileUtils.getObject(pathOrId, currentSession);
     }
 
     /**
      * Determines an object existence.
      */
-    private boolean exists(String pathOrIdOfObject) {
+    private boolean exists(String pathOrId) {
         try {
-            getObject(pathOrIdOfObject);
+            getObject(pathOrId);
             return true;
         } catch (RuntimeException e) {
             return false;
@@ -64,24 +98,24 @@ public abstract class CmisClient {
     /**
      * Gets a folder by path or object id.
      *
-     * @param pathOrIdOfObject the path or folder id
+     * @param pathOrId the path or id of the folder
      * @return the folder object
      */
-    private Folder getBareFolder(String pathOrIdOfObject) {
-        return FileUtils.getFolder(pathOrIdOfObject, currentSession);
+    private Folder getBareFolder(String pathOrId) {
+        return FileUtils.getFolder(pathOrId, currentSession);
     }
 
     /**
      * Gets a document by path or object id.
      *
-     * @param pathOrIdOfObject the path or document id
+     * @param pathOrId the path or id of the document
      * @return the document object
      */
-    private Document getBareDocument(String pathOrIdOfObject) {
+    private Document getBareDocument(String pathOrId) {
         Document document;
 
         try {
-            document = (Document) getObject(pathOrIdOfObject);
+            document = (Document) getObject(pathOrId);
         } catch (ClassCastException cce) {
             throw new IllegalArgumentException("Object is not a document!");
         }
@@ -92,8 +126,18 @@ public abstract class CmisClient {
     /**
      * Returns a PWC of the specified document.
      */
-    private Document checkout(String pathOrIdOfObject) {
-        return getBareDocument(getBareDocument(pathOrIdOfObject).checkOut().getId());
+    private Document checkout(String pathOrId) {
+        return getBareDocument(getBareDocument(pathOrId).checkOut().getId());
+    }
+
+    /**
+     * Joins the specified paths.
+     */
+    private String joinPath(String parent, String child) {
+        if (!parent.endsWith("/")) {
+            parent += "/";
+        }
+        return parent + child;
     }
 
     // API
@@ -114,37 +158,43 @@ public abstract class CmisClient {
      * Connects the client to a repository.
      *
      * @param repositoryId see {@link RepositoryView#getId()}
+     * @throws CmisBaseException if the connection could not be established
      */
-    public void connect(String repositoryId) {
+    public void connect(String repositoryId) throws CmisBaseException {
         currentSession = getSessionFactory().createSession(getSessionParametersFactory().newInstance(repositoryId));
         currentFolder = currentSession.getRootFolder();
+        versionableCmisType = getVersionableCmisType();
     }
 
     /**
-     * Returns the path to the current directory.
+     * Returns whether or not this client is already connected to a repository
+     * that supports versionable documents.
      */
-    public String getCurrentPath() {
-        return currentFolder.getPath();
+    public boolean isConnected() {
+        return currentSession != null && currentFolder != null && versionableCmisType != null;
+    }
+
+    /**
+     * Returns the current folder.
+     */
+    public FolderView getCurrentFolder() {
+        return new FolderView(currentFolder);
     }
 
     /**
      * Changes the current working directory.
      *
-     * @param path the path to navigateTo to.
+     * @param path the path to navigate to.
      */
     public void navigateTo(String path) {
         if (path.equals("..") && !currentFolder.isRootFolder()) {
             currentFolder = currentFolder.getFolderParent();
         } else if (!path.equals(".")) {
+            if (!path.startsWith("/")) {
+                path = joinPath(currentFolder.getPath(), path);
+            }
             currentFolder = getBareFolder(path);
         }
-    }
-
-    /**
-     * Returns the files in the current directory.
-     */
-    public Collection<FileView> listCurrentFolder() {
-        return new FolderView(currentFolder).getChildren();
     }
 
     /**
@@ -162,28 +212,29 @@ public abstract class CmisClient {
     }
 
     /**
-     * Returns the file at the specified {@code path}.
+     * Returns the file at the specified {@code path} or with the specified {@code objectId}.
      */
-    public FileView getFile(String path) {
-        return new FileView((FileableCmisObject) getObject(path));
+    public FileView getFile(String pathOrId) {
+        return new FileView((FileableCmisObject) getObject(pathOrId));
     }
 
     /**
-     * Returns the file at the specified {@code path}.
+     * Returns the document at the specified {@code path} or with the specified {@code objectId}.
      */
-    public DocumentView getDocument(String path) {
-        return new DocumentView(getBareDocument(path));
+    @Override
+    public DocumentView getDocument(String pathOrId) {
+        return new DocumentView(getBareDocument(pathOrId));
     }
 
     /**
-     * Returns the file at the specified {@code path}.
+     * Returns the folder at the specified {@code path}.
      */
-    public FolderView getFolder(String path) {
-        return new FolderView(getBareFolder(path));
+    public FolderView getFolder(String pathOrId) {
+        return new FolderView(getBareFolder(pathOrId));
     }
 
     /**
-     * Creates a subfolder.
+     * Creates a subfolder of the specified parent.
      *
      * @param parent the parent folder
      * @param name   the subfolder name
@@ -195,21 +246,31 @@ public abstract class CmisClient {
     }
 
     /**
+     * Creates a subfolder of the current folder.
+     *
+     * @param name the subfolder name
+     * @return the created folder
+     */
+    public FolderView createFolder(String name) {
+        return createFolder(currentFolder.getPath(), name);
+    }
+
+    /**
      * Uploads a document.
      *
-     * @param parentIdOrPath  the id or path of the parent folder
-     * @param fileName        the source file
-     * @param mimeType        the MIME Type of the source file
-     * @param inputStream     the input stream
-     * @param length          the source file length
-     * @param versioningState the versioning state
-     * @param metadata        additional properties for the uploaded files
+     * @param parentIdOrPath       the id or path of the parent folder
+     * @param fileName             the source file
+     * @param mimeType             the MIME Type of the source file
+     * @param inputStream          the input stream
+     * @param length               the source file length
+     * @param versioningState      the versioning state
+     * @param additionalProperties additional properties for the uploaded files
      * @return the uploaded document
      */
     public DocumentView upload(String parentIdOrPath, String fileName, String mimeType,
                                InputStream inputStream, BigInteger length, VersioningState versioningState,
-                               String checkInComment, Map<? extends String, ?> metadata) {
-        String cmisType = BaseTypeId.CMIS_DOCUMENT.value();
+                               String checkInComment, Map<? extends String, ?> additionalProperties) {
+        String cmisType = versionableCmisType;
         Folder parentFolder = getBareFolder(parentIdOrPath);
 
         if (mimeType == null) {
@@ -217,19 +278,21 @@ public abstract class CmisClient {
         }
 
         // Setup basic properties
-        Map<String, Object> properties = new HashMap<String, Object>();
+        Map<String, Object> properties = new HashMap<>();
         properties.put(PropertyIds.OBJECT_TYPE_ID, cmisType);
         properties.put(PropertyIds.NAME, fileName);
 
         // Setup cool properties
-        if (metadata != null) {
-            properties.putAll(metadata);
+        if (additionalProperties != null) {
+            properties.putAll(additionalProperties);
         }
 
         ContentStream contentStream = new ContentStreamImpl(fileName, length, mimeType, inputStream);
 
         Document document = null;
-        String documentPath = parentFolder.getPath() + "/" + fileName;
+
+        String documentPath = joinPath(parentFolder.getPath(), fileName);
+
         try {
             if (exists(documentPath)) {
                 // Create new version of an existing document
@@ -256,10 +319,19 @@ public abstract class CmisClient {
     /**
      * Deletes all versions of a document.
      *
-     * @param documentPath the absolute path of the document
+     * @param documentPath the absolute path of the document to delete
      */
     public void deleteDocument(String documentPath) {
         getBareDocument(documentPath).deleteAllVersions();
+    }
+
+    /**
+     * Deletes all versions of a document.
+     *
+     * @param document the document to delete
+     */
+    public void deleteDocument(DocumentView document) {
+        deleteDocument(document.getId());
     }
 
     /**
@@ -271,11 +343,22 @@ public abstract class CmisClient {
      */
     public void deleteDocument(String documentPath, String versionLabel) {
         DocumentView documentView = new DocumentView(getBareDocument(documentPath)).getObjectOfVersion(versionLabel);
-        getBareDocument(documentView.getId()).delete();
+        getBareDocument(documentView.getId()).delete(false);
     }
 
     /**
-     * Deletes recursively the specified folder.
+     * Deletes a single version of a document.
+     *
+     * @param document     the document to delete
+     * @param versionLabel the version of the document to delete
+     * @see DocumentView#getVersionLabel()
+     */
+    public void deleteDocument(DocumentView document, String versionLabel) {
+        deleteDocument(document.getId(), versionLabel);
+    }
+
+    /**
+     * Recursively delete a folder.
      *
      * @param folderPath path of the folder to delete
      * @return the paths of folder and documents that could not be deleted
@@ -296,53 +379,63 @@ public abstract class CmisClient {
     }
 
     /**
-     * Queries the current CMIS repository.
+     * Recursively delete a folder.
      *
-     * @param name     a string that has to be contained in the name of the document
-     * @param text     a string that has to be contained in the text of the document
-     * @param metadata a set of additional properties the document must match
-     * @return the result of the query as an {@link org.apache.chemistry.opencmis.client.api.ItemIterable}
+     * @param folder the folder to delete
+     * @return the paths of folder and documents that could not be deleted
      */
-    public CmisQueryResult search(String name, String text, Map<String, String> metadata) {
-        StringBuilder queryBuilder = new StringBuilder();
-        queryBuilder.append("SELECT ")
-                .append(PropertyIds.OBJECT_ID)
-                .append(" FROM ")
-                .append(BaseTypeId.CMIS_DOCUMENT.value());
-
-        List<String> whereClauses = new ArrayList<String>();
-
-        if (name != null && !name.equals("")) {
-            whereClauses.add(PropertyIds.NAME + " LIKE " + escape(name));
-        }
-
-        if (text != null && !text.equals("")) {
-            whereClauses.add("CONTAINS(" + escape(text) + ")");
-        }
-
-        for (String key : metadata.keySet()) {
-            String val = metadata.get(key);
-            whereClauses.add(key + " " + val);
-        }
-
-        if (!whereClauses.isEmpty()) {
-            queryBuilder.append(" WHERE");
-
-            for (int i = 0; i < whereClauses.size(); ++i) {
-                if (i != 0) {
-                    queryBuilder.append(" AND ");
-                }
-                queryBuilder.append(whereClauses.get(i));
-            }
-        }
-
-        String query = queryBuilder.toString();
-        return new CmisQueryResult(this, currentSession.query(query, true));
+    public Collection<String> deleteFolder(FolderView folder) {
+        return deleteFolder(folder.getPath());
     }
 
-    static String escape(String input) {
-        input = input.replaceAll("'", "\\'");
-        return "'" + input + "'";
+    /**
+     * Searches all versions of every document in the current CMIS repository.
+     *
+     * @param name       a string that has to be contained in the name of the document
+     * @param text       a string that has to be contained in the text of the document
+     * @param properties the additional properties the document must match
+     * @return an {@link ItemIterable} of documents matching the query
+     */
+    public ItemIterable<DocumentView> search(String name, String text, Collection<PropertyMatcher> properties) {
+        // Build query
+        String type = BaseTypeId.CMIS_DOCUMENT.value();
+        QueryBuilder queryBuilder = new QueryBuilder(this, currentSession)
+                .select(type, PropertyIds.OBJECT_ID)
+                .from(BaseTypeId.CMIS_DOCUMENT.value());
+
+        if (name != null) {
+            queryBuilder = queryBuilder.where(new PropertyMatcher(PropertyIds.NAME,
+                    QueryOperator.LIKE, PropertyType.STRING, name));
+        }
+
+        if (text != null) {
+            queryBuilder = queryBuilder.whereContains(text);
+        }
+
+        if (properties != null) {
+            queryBuilder = queryBuilder.where(properties);
+        }
+
+        // Execute query
+        return queryBuilder.executeQuery(true);
     }
 
+    /**
+     * Searches all versions of every document in the current CMIS repository.
+     *
+     * @param name a string that has to be contained in the name of the document
+     * @param text a string that has to be contained in the text of the document
+     * @return an {@link ItemIterable} of documents matching the query
+     */
+    public ItemIterable<DocumentView> search(String name, String text) {
+        return search(name, text, null);
+    }
+
+    /**
+     * Returns a {@link com.github.atave.VaadinCmisBrowser.cmis.api.QueryBuilder}
+     * to interactively build queries.
+     */
+    public QueryBuilder getQueryBuilder() {
+        return new QueryBuilder(this, currentSession);
+    }
 }

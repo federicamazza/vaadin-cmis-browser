@@ -1,6 +1,6 @@
 package com.github.atave.junderscore;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 public class _maxTest extends com.github.atave.junderscore.BaseTest<Integer> {
     @Override

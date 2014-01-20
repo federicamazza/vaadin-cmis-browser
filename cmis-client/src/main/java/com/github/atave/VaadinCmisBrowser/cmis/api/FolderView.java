@@ -1,5 +1,6 @@
 package com.github.atave.VaadinCmisBrowser.cmis.api;
 
+import com.github.atave.junderscore.Lambda1;
 import com.github.atave.junderscore._map;
 import org.apache.chemistry.opencmis.client.api.CmisObject;
 import org.apache.chemistry.opencmis.client.api.Document;
@@ -7,6 +8,8 @@ import org.apache.chemistry.opencmis.client.api.Folder;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisObjectNotFoundException;
 
 import java.util.Collection;
+
+import static com.github.atave.junderscore.JUnderscore._;
 
 
 /**
@@ -45,6 +48,40 @@ public class FolderView extends FileView {
                 }
             }
         }.on(getDelegate().getChildren());
+    }
+
+    /**
+     * Returns the documents whose first parent is this folder.
+     */
+    public Collection<DocumentView> getDocuments() {
+        return _(getChildren()).filter(new Lambda1<Boolean, FileView>() {
+            @Override
+            public Boolean call(FileView o) {
+                return o.isDocument();
+            }
+        }).map(new Lambda1<DocumentView, FileView>() {
+            @Override
+            public DocumentView call(FileView o) {
+                return o.asDocument();
+            }
+        }).value();
+    }
+
+    /**
+     * Returns the direct subfolders.
+     */
+    public Collection<FolderView> getFolders() {
+        return _(getChildren()).filter(new Lambda1<Boolean, FileView>() {
+            @Override
+            public Boolean call(FileView o) {
+                return o.isFolder();
+            }
+        }).map(new Lambda1<FolderView, FileView>() {
+            @Override
+            public FolderView call(FileView o) {
+                return o.asFolder();
+            }
+        }).value();
     }
 
     /**

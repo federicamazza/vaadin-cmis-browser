@@ -19,9 +19,7 @@
                 <!-- Surefire -->
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <configuration>
-                    <testFailureIgnore>true</testFailureIgnore>
-                </configuration>
+                <version>2.16</version>
             </plugin>
         </plugins>
     </build>

@@ -27,7 +27,7 @@ public abstract class DocumentUploader implements Upload.Receiver, Upload.Succee
     private String fileName;
     private VersioningState versioningState;
     private String checkInComment;
-    private final Map<String, Object> metadata = new HashMap<String, Object>();
+    private final Map<String, Object> properties = new HashMap<String, Object>();
 
     private DocumentView documentView;
 
@@ -73,7 +73,7 @@ public abstract class DocumentUploader implements Upload.Receiver, Upload.Succee
         InputStream stream = new ByteArrayInputStream(outputStream.toByteArray());
 
         documentView = client.upload(parent, fileName, mimeType, stream,
-                BigInteger.valueOf(length), versioningState, checkInComment, metadata);
+                BigInteger.valueOf(length), versioningState, checkInComment, properties);
 
         onCmisUploadReceived(documentView);
     }
@@ -116,8 +116,8 @@ public abstract class DocumentUploader implements Upload.Receiver, Upload.Succee
     /**
      * Returns an immutable copy of the uploaded file's additional properties.
      */
-    public Map<String, Object> getMetadata() {
-        return Collections.unmodifiableMap(metadata);
+    public Map<String, Object> getProperties() {
+        return Collections.unmodifiableMap(properties);
     }
 
     /**
@@ -159,14 +159,14 @@ public abstract class DocumentUploader implements Upload.Receiver, Upload.Succee
      * Get an additional property of the uploaded file.
      */
     public Object getProperty(String propertyId) {
-        return metadata.get(propertyId);
+        return properties.get(propertyId);
     }
 
     /**
      * Set an additional property on the uploaded file.
      */
     public void setProperty(String propertyId, Object value) {
-        metadata.put(propertyId, value);
+        properties.put(propertyId, value);
     }
 
 }

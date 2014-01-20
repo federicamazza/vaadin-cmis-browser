@@ -16,9 +16,9 @@ public class Config {
     private Config() {
     }
 
-    static Logger logger = LoggerFactory.getLogger(Config.class);
+    private static final Logger logger = LoggerFactory.getLogger(Config.class);
 
-    static Properties properties = new Properties();
+    static final Properties properties = new Properties();
 
     private static InputStream getResource(String name) {
         return Config.class.getResourceAsStream(name);

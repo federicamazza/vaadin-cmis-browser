@@ -6,25 +6,27 @@ import org.apache.chemistry.opencmis.client.runtime.SessionFactoryImpl;
 
 public class OpenCmisInMemoryClient extends HttpAuthCmisClient {
 
-    private static final String ATOMPUB_URL = "opencmis.inmemory.atompub.url";
+    public static final String ATOMPUB_URL = "opencmis.inmemory.atompub.url";
 
+    /**
+     * Creates a new {@code OpenCmisInMemoryClient}.
+     *
+     * @param user       the client's user
+     * @param password   the client's password
+     * @param atomPubUrl the client's AtomPub binding URL
+     */
+    public OpenCmisInMemoryClient(String user, String password, String atomPubUrl) {
+        super(user, password, atomPubUrl);
+    }
+
+    /**
+     * Creates a new {@code OpenCmisInMemoryClient} with the default AtomPub binding URL.
+     *
+     * @param user     the client's user
+     * @param password the client's password
+     */
     public OpenCmisInMemoryClient(String user, String password) {
-        super(user, password);
-    }
-
-    /**
-     * Constructs an {@code OpenCmisInMemoryClient} with testing credentials.
-     */
-    OpenCmisInMemoryClient() {
-        this("test_user", "test_password");
-    }
-
-    /**
-     * Returns the AtomPub binding URL for this client.
-     */
-    @Override
-    protected String getAtomPubUrl() {
-        return Config.get(ATOMPUB_URL);
+        this(user, password, Config.get(ATOMPUB_URL));
     }
 
     /**

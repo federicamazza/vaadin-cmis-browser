@@ -18,14 +18,14 @@ public abstract class _groupBy<K, T> {
     protected abstract K process(T object);
 
     public Map<K, Collection<T>> on(Iterable<T> iterable) {
-        Map<K, Collection<T>> map = new HashMap<K, Collection<T>>();
+        Map<K, Collection<T>> map = new HashMap<>();
 
         for (T o : iterable) {
             K key = process(o);
             Collection<T> values = map.get(key);
 
             if (values == null) {
-                values = new ArrayList<T>();
+                values = new ArrayList<>();
                 map.put(key, values);
             }
 

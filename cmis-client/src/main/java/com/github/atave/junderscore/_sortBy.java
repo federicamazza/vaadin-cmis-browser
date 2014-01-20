@@ -17,7 +17,7 @@ public abstract class _sortBy<R extends Comparable<R>, T> {
     protected abstract R process(T object);
 
     public Collection<R> on(Iterable<T> iterable) {
-        List<R> retval = new ArrayList<R>();
+        List<R> retval = new ArrayList<>();
         for (T o : iterable) {
             retval.add(process(o));
         }

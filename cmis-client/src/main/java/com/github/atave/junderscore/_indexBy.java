@@ -11,7 +11,7 @@ public abstract class _indexBy<K, T> {
     protected abstract K process(T object);
 
     public Map<K, T> on(Iterable<T> iterable) {
-        Map<K, T> map = new HashMap<K, T>();
+        Map<K, T> map = new HashMap<>();
 
         for (T o : iterable) {
             map.put(process(o), o);

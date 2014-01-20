@@ -12,7 +12,8 @@ public abstract class BaseTest<T> {
         return source;
     }
 
-    protected void setSource(T... a) {
+    @SafeVarargs
+    protected final void setSource(T... a) {
         source = Arrays.asList(a);
     }
 

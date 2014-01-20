@@ -12,7 +12,7 @@ public abstract class _reduceRight<R, T> extends _reduce<R, T> {
 
     @Override
     public R on(Collection<T> collection, R memo) {
-        List<T> list = new ArrayList<T>(collection);
+        List<T> list = new ArrayList<>(collection);
         Collections.reverse(list);
         return super.on(list, memo);
     }

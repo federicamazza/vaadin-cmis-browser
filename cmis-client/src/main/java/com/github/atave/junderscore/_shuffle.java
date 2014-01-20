@@ -11,7 +11,7 @@ import java.util.List;
 public class _shuffle {
 
     public static <T> Collection<T> on(Collection<T> collection) {
-        List<T> list = new ArrayList<T>(collection);
+        List<T> list = new ArrayList<>(collection);
         Collections.shuffle(list);
         return list;
     }
