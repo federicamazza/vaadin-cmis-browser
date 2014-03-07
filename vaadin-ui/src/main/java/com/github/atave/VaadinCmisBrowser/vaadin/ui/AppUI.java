@@ -1,7 +1,14 @@
 package com.github.atave.VaadinCmisBrowser.vaadin.ui;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
+
+import com.github.atave.VaadinCmisBrowser.cmis.api.CmisClient;
+import com.github.atave.VaadinCmisBrowser.cmis.api.FolderView;
+import com.github.atave.VaadinCmisBrowser.cmis.impl.AlfrescoClient;
+import com.github.atave.VaadinCmisBrowser.cmis.impl.OpenCmisInMemoryClient;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.VaadinServletConfiguration;
 import com.vaadin.navigator.Navigator;
@@ -33,11 +40,33 @@ import com.vaadin.ui.VerticalLayout;
 
 import javax.servlet.annotation.WebServlet;
 
+import org.apache.chemistry.opencmis.commons.exceptions.CmisBaseException;
+
 @Theme("dashboard")
 @SuppressWarnings("serial")
 public class AppUI extends UI {
+	private CmisClient client;
 
-    @WebServlet(value = "/*", asyncSupported = true)
+	public CmisClient getClient() {
+		return client;
+	}
+
+	public void setClient(CmisClient client) {
+		this.client = client;
+	}
+	
+//	private AlfrescoClient client;
+//	
+//
+//	public AlfrescoClient getClient() {
+//		return client;
+//	}
+//
+//	public void setClient(AlfrescoClient client) {
+//		this.client = client;
+//	}
+
+	@WebServlet(value = "/*", asyncSupported = true)
     @VaadinServletConfiguration(productionMode = false, ui = AppUI.class, widgetset = "com.github.atave.VaadinCmisBrowser.vaadin.ui.AppWidgetSet")
     public static class Servlet extends VaadinServlet {
     }
@@ -47,11 +76,13 @@ public class AppUI extends UI {
 	CssLayout menu = new CssLayout();
 	CssLayout content = new CssLayout();
 	private Navigator nav;
+	
 
 	HashMap<String, Class<? extends View>> routes = new HashMap<String, Class<? extends View>>() {
 		{
 			put("/home", HomeView.class);
 			put("/search", SearchView.class);
+			put("/upload", UploadView.class);
 		}
 	};
 
@@ -65,7 +96,7 @@ public class AppUI extends UI {
         Label bg = new Label();
         bg.setSizeUndefined();
         bg.addStyleName("login-bg");
-        root.addComponent(bg);
+        root.addComponent(bg);        
 		buildLoginView(false);
 	}
 	
@@ -73,14 +104,6 @@ public class AppUI extends UI {
 	        if (exit) {
 	            root.removeAllComponents();
 	        }
-//	        helpManager.closeAll();
-//	        HelpOverlay w = helpManager
-//	                .addOverlay(
-//	                        "Welcome to the Dashboard Demo Application",
-//	                        "<p>This application is not real, it only demonstrates an application built with the <a href=\"http://vaadin.com\">Vaadin framework</a>.</p><p>No username or password is required, just click the â€˜Sign Inâ€™ button to continue. You can try out a random username and password, though.</p>",
-//	                        "login");
-//	        w.center();
-//	        addWindow(w);
 
 	        addStyleName("login");
 
@@ -104,7 +127,7 @@ public class AppUI extends UI {
 	        labels.addComponent(welcome);
 	        labels.setComponentAlignment(welcome, Alignment.MIDDLE_LEFT);
 
-	        Label title = new Label("QuickTickets Dashboard");
+	        Label title = new Label("My Alfresco");
 	        title.setSizeUndefined();
 	        title.addStyleName("h2");
 	        title.addStyleName("light");
@@ -139,29 +162,38 @@ public class AppUI extends UI {
 	        signin.addClickListener(new ClickListener() {
 	            @Override
 	            public void buttonClick(ClickEvent event) {
-	                if (username.getValue() != null
-	                        && username.getValue().equals("")
-	                        && password.getValue() != null
-	                        && password.getValue().equals("")) {
-//	                    signin.removeShortcutListener(enter);
-	                    buildMainView();
-	                } else {
-	                    if (loginPanel.getComponentCount() > 2) {
-	                        // Remove the previous error message
-	                        loginPanel.removeComponent(loginPanel.getComponent(2));
-	                    }
-	                    // Add new error message
-	                    Label error = new Label(
-	                            "Wrong username or password. <span>Hint: try empty values</span>",
-	                            ContentMode.HTML);
-	                    error.addStyleName("error");
-	                    error.setSizeUndefined();
-	                    error.addStyleName("light");
-	                    // Add animation
-	                    error.addStyleName("v-animate-reveal");
-	                    loginPanel.addComponent(error);
-	                    username.focus();
-	                }
+	            	
+	            	try {
+	            		String user1 = "";
+		            	String password1 = "";
+//		            	client = new AlfrescoClient("", "","");
+	            	    client = new OpenCmisInMemoryClient(user1, password1);
+	            	    if (username.getValue() != null
+		                        && username.getValue().equals("")
+		                        && password.getValue() != null
+		                        && password.getValue().equals("")) {
+//		                    signin.removeShortcutListener(enter);
+		                    buildMainView(client);
+		                } 
+	            	} catch(CmisBaseException e) {
+	            	    // Wrong username and password
+	            		 if (loginPanel.getComponentCount() > 2) {
+		                        // Remove the previous error message
+		                        loginPanel.removeComponent(loginPanel.getComponent(2));
+		                    }
+		                    // Add new error message
+		                    Label error = new Label(
+		                            "Wrong username or password. <span>Hint: try empty values</span>",
+		                            ContentMode.HTML);
+		                    error.addStyleName("error");
+		                    error.setSizeUndefined();
+		                    error.addStyleName("light");
+		                    // Add animation
+		                    error.addStyleName("v-animate-reveal");
+		                    loginPanel.addComponent(error);
+		                    username.focus();      
+	            	}
+	               
 	            }
 	        });
 
@@ -173,7 +205,16 @@ public class AppUI extends UI {
 	        loginLayout.setComponentAlignment(loginPanel, Alignment.MIDDLE_CENTER);
 	    }
 
-	private void buildMainView() {
+	private void buildMainView(CmisClient client) {
+		FolderView currentFolder = client.getCurrentFolder();
+		System.out.println("build main view: " + currentFolder.getName());
+//		// Get the current path
+//		String currentPath = currentFolder.getPath();
+//		// List folders in the current directory
+//		Collection<FolderView> folderViews = currentFolder.getFolders();
+//		for(FolderView folder : folderViews){
+//			System.out.println(folder.getName());
+//		}
 
 		nav = new Navigator(this, content);
 
@@ -270,7 +311,7 @@ public class AppUI extends UI {
 
 		menu.removeAllComponents();
 
-		for (final String view : new String[] { "home", "search" }) {
+		for (final String view : new String[] { "home", "search", "upload" }) {
 			Button b = new NativeButton(view.substring(0, 1).toUpperCase()
 					+ view.substring(1).replace('-', ' '));
 			b.addStyleName("icon-" + view);
